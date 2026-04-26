@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WEAVING TUTORIAL • DAYANA GUERRERO</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Archivo+Black&display=swap');
+
+  :root {
+    --golden: #e7cc44;
+    --coral: #de544a;
+    --cyan: #5bc6e2;
+    --lime: #c1dc6e;
+    --purple: #8d69c6;
+    --pink: #e97883;
+    --bg: #0a0a0a;
+    --panel: #111111;
+    --border: rgba(255,255,255,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    background: var(--bg);
+    font-family: 'Space Mono', monospace;
+    color: #f5f5f5;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ── STEP SLIDES ── */
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+  }
+  .slide.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* ── LEFT LABEL STRIP ── */
+  .label-strip {
+    width: clamp(200px, 22vw, 280px);
+    flex-shrink: 0;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2.5rem 2rem;
+    position: relative;
+    z-index: 10;
+  }
+
+  .step-badge {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: clamp(3rem, 5vw, 5rem);
+    line-height: 1;
+    color: var(--coral);
+    opacity: 0.2;
+    margin-bottom: 1rem;
+  }
+
+  .step-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1.5rem, 2.2vw, 2.2rem);
+    letter-spacing: 0.08em;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+
+  .step-desc {
+    font-size: 0.72rem;
+    line-height: 1.8;
+    color: var(--cyan);
+    opacity: 0.85;
+  }
+
+  .step-key {
+    margin-top: 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: var(--golden);
+  }
+
+  /* ── CANVAS DEMO AREA ── */
+  .demo-area {
+    flex: 1;
+    position: relative;
+    background: #0d0d0d;
+    overflow: hidden;
+  }
+
+  /* ── GRID BACKGROUND ── */
+  .demo-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  /* ── WOVEN CELLS ── */
+  .cell {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    border-radius: 2px;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  .cell.show {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* ── CURSOR ── */
+  .cursor {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--golden);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 50;
+    transition: left 0.4s cubic-bezier(0.25,0.1,0.25,1), top 0.4s cubic-bezier(0.25,0.1,0.25,1);
+  }
+  .cursor::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 4px;
+    height: 4px;
+    background: var(--golden);
+    border-radius: 50%;
+  }
+  .cursor.dragging {
+    border-color: var(--coral);
+    box-shadow: 0 0 12px var(--coral);
+  }
+  .cursor.dragging::after {
+    background: var(--coral);
+  }
+
+  /* ── DRAG TRAIL ── */
+  .trail-dot {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--coral);
+    border-radius: 50%;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .trail-dot.show { opacity: 0.6; }
+
+  /* ── SIDEBAR REPLICA ── */
+  .sidebar-hint {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 48px;
+    background: rgba(10,10,10,0.95);
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem 0;
+    gap: 0.75rem;
+    z-index: 20;
+  }
+
+  .sym-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: rgba(255,255,255,0.5);
+  }
+  .sym-btn.active-sym {
+    border-color: var(--golden);
+    color: var(--golden);
+    background: rgba(231,204,68,0.1);
+    box-shadow: 0 0 8px rgba(231,204,68,0.3);
+  }
+
+  /* ── KEYBOARD LETTERS ── */
+  .kbd-display {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.4rem;
+    z-index: 30;
+  }
+
+  .kbd-key {
+    width: 38px;
+    height: 44px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-bottom: 3px solid rgba(255,255,255,0.1);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 1rem;
+    color: rgba(255,255,255,0.4);
+    transition: all 0.15s ease;
+  }
+  .kbd-key.pressed {
+    background: rgba(231,204,68,0.15);
+    border-color: var(--golden);
+    border-bottom-color: rgba(231,204,68,0.3);
+    color: var(--golden);
+    transform: translateY(2px);
+    box-shadow: 0 0 10px rgba(231,204,68,0.25);
+  }
+
+  /* ── TYPED WORD DISPLAY ── */
+  .typed-word {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 0;
+    letter-spacing: 0.15em;
+    z-index: 25;
+    display: flex;
+    gap: 4px;
+  }
+
+  .typed-char {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 2px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  .typed-char.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Pixel-style letter rendering */
+  .pixel-row {
+    display: flex;
+    gap: 2px;
+  }
+  .pixel {
+    width: 6px;
+    height: 6px;
+    border-radius: 1px;
+    background: transparent;
+  }
+  .pixel.on { background: currentColor; }
+
+  /* ── COLOR DOTS ── */
+  .color-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .color-dot.selected {
+    border-color: white;
+    transform: scale(1.2);
+    box-shadow: 0 0 10px currentColor;
+  }
+
+  /* ── PROGRESS DOTS ── */
+  .progress-bar {
+    position: absolute;
+    bottom: 1.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.5rem;
+    z-index: 200;
+  }
+
+  .prog-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    transition: all 0.3s;
+  }
+  .prog-dot.active {
+    background: var(--golden);
+    width: 20px;
+    border-radius: 3px;
+  }
+
+  /* ── SAVE BUTTON DEMO ── */
+  .save-btn-demo {
+    position: absolute;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--coral);
+    color: white;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.15em;
+    padding: 0.8rem 2rem;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    z-index: 30;
+    opacity: 0;
+    transition: opacity 0.4s ease, transform 0.2s ease;
+  }
+  .save-btn-demo.show {
+    opacity: 1;
+  }
+  .save-btn-demo.click-anim {
+    transform: translateX(-50%) scale(0.95);
+    filter: brightness(1.2);
+  }
+  .save-icon { font-size: 1rem; }
+
+  /* ── FLASH EFFECT ── */
+  .flash {
+    position: absolute;
+    inset: 0;
+    background: white;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 100;
+    transition: opacity 0.1s ease;
+  }
+  .flash.active { opacity: 0.6; }
+
+  /* ── ANNOTATIONS ── */
+  .annotation {
+    position: absolute;
+    font-size: 0.65rem;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.1em;
+    color: var(--golden);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: 40;
+  }
+  .annotation.show { opacity: 1; }
+  .annotation .ann-line {
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: var(--golden);
+    margin-top: 4px;
+    opacity: 0.5;
+  }
+
+  /* ── TITLE OVERLAY ── */
+  .title-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    z-index: 200;
+    transition: opacity 0.8s ease;
+  }
+  .title-overlay.hide { opacity: 0; pointer-events: none; }
+
+  .title-overlay h1 {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    text-align: center;
+    line-height: 0.9;
+  }
+  .title-overlay h1 span { display: block; }
+  .title-overlay h1 span:nth-child(1) { color: var(--lime); }
+  .title-overlay h1 span:nth-child(2) { color: var(--golden); }
+  .title-overlay h1 span:nth-child(3) { color: var(--coral); }
+
+  .title-overlay p {
+    margin-top: 1.5rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.25em;
+    color: var(--cyan);
+  }
+
+  .title-bar {
+    width: 60px;
+    height: 3px;
+    background: var(--coral);
+    margin-top: 1rem;
+    animation: expandBar 1s ease 0.5s forwards;
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  @keyframes expandBar {
+    to { transform: scaleX(1); }
+  }
+
+  /* ── NAV ARROWS ── */
+  .nav-arrows {
+    position: absolute;
+    bottom: 1rem;
+    right: 1.5rem;
+    display: flex;
+    gap: 0.5rem;
+    z-index: 200;
+  }
+  .nav-arr {
+    width: 32px;
+    height: 32px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    color: rgba(255,255,255,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    font-family: 'Space Mono', monospace;
+  }
+  .nav-arr:hover {
+    background: rgba(231,204,68,0.1);
+    border-color: var(--golden);
+    color: var(--golden);
+  }
+
+  /* ── LOOPING ARROW (auto) ── */
+  .auto-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.25);
+    z-index: 200;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- TITLE INTRO OVERLAY -->
+<div class="title-overlay" id="titleOverlay">
+  <h1>
+    <span>HOW TO</span>
+    <span>WEAVE</span>
+    <span>YOUR TEXTILE</span>
+  </h1>
+  <div class="title-bar"></div>
+  <p>4 STEPS · FEELING DAYANA 2026</p>
+</div>
+
+<!-- AUTO badge -->
+<div class="auto-badge">AUTO ↻</div>
+
+<!-- PROGRESS DOTS (outside slides, always visible) -->
+<div class="progress-bar" id="progressBar">
+  <div class="prog-dot active"></div>
+  <div class="prog-dot"></div>
+  <div class="prog-dot"></div>
+  <div class="prog-dot"></div>
+</div>
+
+<!-- NAV ARROWS -->
+<div class="nav-arrows">
+  <div class="nav-arr" id="prevBtn">←</div>
+  <div class="nav-arr" id="nextBtn">→</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SLIDE 1: CLICK & DRAG TO WEAVE -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="slide active" id="slide-0">
+  <div class="label-strip">
+    <div class="step-badge">01</div>
+    <div class="step-title" style="color: var(--coral)">CLICK &amp; DRAG<br>TO WEAVE</div>
+    <div class="step-desc">Click anywhere on the canvas and drag to paint Andean symbols into the grid. Each cell fills with your active symbol. Slow, deliberate strokes create the most intricate patterns — a speed warning appears if you rush.</div>
+    <div class="step-key">🖱 CLICK + DRAG</div>
+  </div>
+  <div class="demo-area" id="demo-0">
+    <div class="demo-grid"></div>
+
+    <!-- Pre-drawn static cells (subtle bg) -->
+    <!-- Dynamic cells rendered by JS -->
+    <div id="cells-0"></div>
+
+    <!-- Trail dots -->
+    <div id="trail-0"></div>
+
+    <!-- Cursor -->
+    <div class="cursor" id="cursor-0" style="left: 80px; top: 100px"></div>
+
+    <!-- Annotation -->
+    <div class="annotation" id="ann-0" style="top: 60px; left: 120px">
+      DRAG TO PLACE SYMBOLS
+      <span class="ann-line"></span>
+    </div>
+
+    <!-- Left controls panel hint -->
+    <div class="sidebar-hint" style="left:0; right:auto; border-left:none; border-right:1px solid var(--border);">
+      <div class="sym-btn active-sym">╋</div>
+      <div class="sym-btn">◆</div>
+      <div class="sym-btn">△</div>
+      <div class="sym-btn">◉</div>
+      <div class="sym-btn">✦</div>
+      <div class="sym-btn">◐</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SLIDE 2: CHOOSE ANY SYMBOL -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="slide" id="slide-1">
+  <div class="label-strip">
+    <div class="step-badge">02</div>
+    <div class="step-title" style="color: var(--golden)">CHOOSE<br>ANY SYMBOL</div>
+    <div class="step-desc">Pick from 28 traditional Andean motifs in the SYMBOLS section of the left controls panel — crosses, diamonds, celestial forms, chevrons, and more. Your active symbol highlights in gold.</div>
+    <div class="step-key">← LEFT PANEL</div>
+  </div>
+  <div class="demo-area" id="demo-1">
+    <div class="demo-grid"></div>
+    <div id="cells-1"></div>
+    <div class="cursor" id="cursor-1" style="left: 300px; top: 150px"></div>
+
+    <!-- Symbol grid demonstration -->
+    <div id="sym-showcase" style="position:absolute; top:50%; left:45%; transform:translate(-50%,-50%); display:flex; flex-direction:column; gap:8px; z-index:20"></div>
+
+    <!-- Sidebar with more symbols -->
+    <div class="sidebar-hint" id="sidebar-1" style="left:0; right:auto; border-left:none; border-right:1px solid var(--border);">
+      <div class="sym-btn" id="sb-0">╋</div>
+      <div class="sym-btn" id="sb-1">◆</div>
+      <div class="sym-btn" id="sb-2">△</div>
+      <div class="sym-btn" id="sb-3">◉</div>
+      <div class="sym-btn" id="sb-4">✦</div>
+      <div class="sym-btn" id="sb-5">⬢</div>
+      <div class="sym-btn" id="sb-6">◐</div>
+      <div class="sym-btn" id="sb-7">☼</div>
+    </div>
+
+    <div class="annotation show" id="ann-1" style="bottom: 80px; left: 40px; opacity:0">
+      28 ANDEAN SYMBOLS
+      <span class="ann-line"></span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SLIDE 3: TYPE TO SPELL WORDS -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="slide" id="slide-2">
+  <div class="label-strip">
+    <div class="step-badge">03</div>
+    <div class="step-title" style="color: var(--lime)">TYPE TO<br>SPELL WORDS</div>
+    <div class="step-desc">Click the canvas first, then press any letter keys to weave pixel words into the grid. A TYPE bar at the top shows your current word. Press Backspace to delete a letter, or Enter to clear the word.</div>
+    <div class="step-key">⌨ CLICK CANVAS · A–Z</div>
+  </div>
+  <div class="demo-area" id="demo-2">
+    <div class="demo-grid"></div>
+
+    <!-- Pixel word display area -->
+    <div id="pixel-word-area" style="position:absolute; top:30%; left:50%; transform:translateX(-50%); display:flex; gap:8px; z-index:25"></div>
+
+    <!-- Keyboard row -->
+    <div class="kbd-display" id="kbd-display">
+      <div class="kbd-key" id="k-A">A</div>
+      <div class="kbd-key" id="k-N">N</div>
+      <div class="kbd-key" id="k-D">D</div>
+      <div class="kbd-key" id="k-E">E</div>
+      <div class="kbd-key" id="k-A2">A</div>
+      <div class="kbd-key" id="k-N2">N</div>
+    </div>
+
+    <div class="annotation" id="ann-2" style="top:18%; left:50%; transform:translateX(-50%)">
+      WORDS WOVEN IN PIXEL LETTERFORMS
+      <span class="ann-line" style="margin:0 auto"></span>
+    </div>
+
+    <!-- Type bar replica -->
+    <div style="position:absolute; top:8px; left:52px; right:0; height:32px; background:rgba(255,255,255,0.04); border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; padding:0 12px; z-index:30; font-family:'Space Mono',monospace; font-size:0.62rem; letter-spacing:0.12em;">
+      <span style="color:var(--golden); opacity:0.7">TYPE</span>
+      <span id="type-bar-demo" style="color:#f5f5f5; opacity:0.9"></span><span style="color:var(--golden); animation:blink 1s step-end infinite">_</span>
+      <span style="margin-left:auto; color:rgba(255,255,255,0.25); font-size:0.55rem">ENTER TO CLEAR</span>
+    </div>
+    <style>@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}</style>
+
+    <div class="sidebar-hint" style="left:0; right:auto; border-left:none; border-right:1px solid var(--border);">
+      <div class="sym-btn active-sym">◆</div>
+      <div class="sym-btn">△</div>
+      <div class="sym-btn">◉</div>
+      <div class="sym-btn">✦</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SLIDE 4: SAVE PNG -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="slide" id="slide-3">
+  <div class="label-strip">
+    <div class="step-badge">04</div>
+    <div class="step-title" style="color: var(--cyan)">SAVE<br>YOUR PNG</div>
+    <div class="step-desc">When your textile is ready, click SAVE PNG in the left controls panel. Your creation is exported as a full-resolution PNG and added to your Archive — where you can revisit and expand it anytime.</div>
+    <div class="step-key">↓ LEFT PANEL → SAVE PNG</div>
+  </div>
+  <div class="demo-area" id="demo-3">
+    <div class="demo-grid"></div>
+
+    <!-- Final composition with many cells -->
+    <div id="cells-3"></div>
+
+    <!-- Flash effect -->
+    <div class="flash" id="flash-3"></div>
+
+    <!-- Save button -->
+    <button class="save-btn-demo" id="save-btn" onclick="">
+      <span class="save-icon">↓</span>
+      SAVE PNG
+    </button>
+
+    <!-- Download success -->
+    <div id="save-confirm" style="position:absolute; top:2rem; left:50%; transform:translateX(-50%); font-family:'Bebas Neue',sans-serif; font-size:1rem; letter-spacing:0.15em; color:var(--lime); opacity:0; transition: opacity 0.4s ease; white-space:nowrap; z-index:50">
+      ✓ SAVED TO ARCHIVE
+    </div>
+
+    <div class="annotation" id="ann-3" style="bottom:7rem; left:50%; transform:translateX(-50%); text-align:center; opacity:0">
+      EXPORTS YOUR FULL CANVAS
+    </div>
+
+    <!-- Left controls panel replica -->
+    <div class="sidebar-hint" style="left:0; right:auto; border-left:none; border-right:1px solid var(--border); width:60px; padding-top:0.5rem; gap:0.5rem;">
+      <div class="sym-btn" style="font-size:9px; letter-spacing:0.04em; color:rgba(255,255,255,0.3)">━</div>
+      <div class="sym-btn" style="font-size:9px; letter-spacing:0.04em; color:rgba(255,255,255,0.3)">CONN</div>
+      <div style="width:32px; height:1px; background:var(--border);"></div>
+      <div class="sym-btn" style="font-size:11px; color:var(--coral)">↻</div>
+      <div class="sym-btn active-sym" style="font-size:11px; color:var(--lime); border-color:var(--lime); background:rgba(193,220,110,0.1)">↓</div>
+      <div class="sym-btn" style="font-size:11px; color:rgba(255,255,255,0.3)">?</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── PIXEL FONT (5x7) ───────────────────────────────────────────────
+const PIXELS = {
+  A: [[0,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1]],
+  N: [[1,0,0,0,1],[1,1,0,0,1],[1,0,1,0,1],[1,0,0,1,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1]],
+  D: [[1,1,1,0,0],[1,0,0,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,1,0],[1,1,1,0,0]],
+  E: [[1,1,1,1,1],[1,0,0,0,0],[1,0,0,0,0],[1,1,1,1,0],[1,0,0,0,0],[1,0,0,0,0],[1,1,1,1,1]],
+};
+
+function makePixelChar(letter, color) {
+  const rows = PIXELS[letter] || PIXELS['A'];
+  const wrap = document.createElement('div');
+  wrap.style.display = 'flex';
+  wrap.style.flexDirection = 'column';
+  wrap.style.gap = '2px';
+  wrap.style.opacity = '0';
+  wrap.style.transform = 'translateY(12px)';
+  wrap.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+  rows.forEach(row => {
+    const rowEl = document.createElement('div');
+    rowEl.style.display = 'flex';
+    rowEl.style.gap = '2px';
+    row.forEach(on => {
+      const px = document.createElement('div');
+      px.style.width = '8px';
+      px.style.height = '8px';
+      px.style.borderRadius = '1px';
+      px.style.background = on ? color : 'transparent';
+      rowEl.appendChild(px);
+    });
+    wrap.appendChild(rowEl);
+  });
+  return wrap;
+}
+
+// ─── SLIDE MANAGEMENT ───────────────────────────────────────────────
+const slides = document.querySelectorAll('.slide');
+const progDots = document.querySelectorAll('.prog-dot');
+let currentSlide = 0;
+let slideTimeout = null;
+const SLIDE_DURATIONS = [5200, 5500, 6000, 5500];
+let stopperFns = [];
+
+function goToSlide(idx) {
+  if (slideTimeout) clearTimeout(slideTimeout);
+  if (stopperFns[currentSlide]) stopperFns[currentSlide]();
+
+  slides[currentSlide].classList.remove('active');
+  progDots[currentSlide].classList.remove('active');
+
+  currentSlide = (idx + slides.length) % slides.length;
+
+  slides[currentSlide].classList.add('active');
+  progDots[currentSlide].classList.add('active');
+
+  startSlideAnimation(currentSlide);
+  slideTimeout = setTimeout(() => goToSlide(currentSlide + 1), SLIDE_DURATIONS[currentSlide]);
+}
+
+document.getElementById('nextBtn').onclick = () => goToSlide(currentSlide + 1);
+document.getElementById('prevBtn').onclick = () => goToSlide(currentSlide - 1);
+
+// ─── SLIDE 0 ANIMATION: Click & Drag ─────────────────────────────────
+function animSlide0() {
+  const cursor = document.getElementById('cursor-0');
+  const cellsContainer = document.getElementById('cells-0');
+  const trailContainer = document.getElementById('trail-0');
+  const ann = document.getElementById('ann-0');
+  cellsContainer.innerHTML = '';
+  trailContainer.innerHTML = '';
+  ann.classList.remove('show');
+
+  const symbols = ['╋','◆','△','◉','✦','◇','▬'];
+  const colors = ['#e7cc44','#de544a','#c1dc6e','#5bc6e2','#8d69c6','#e97883','#d39c42'];
+
+  // Drag path: series of grid positions
+  const gridSize = 28;
+  const paths = [
+    // Horizontal sweep
+    {col:2, row:3},{col:3,row:3},{col:4,row:3},{col:5,row:3},{col:6,row:3},
+    {col:7,row:3},{col:8,row:3},{col:9,row:3},{col:10,row:3},
+    // Go down
+    {col:10,row:4},{col:10,row:5},{col:10,row:6},
+    // Horizontal back
+    {col:9,row:6},{col:8,row:6},{col:7,row:6},{col:6,row:6},{col:5,row:6},
+    // Another row
+    {col:3,row:8},{col:4,row:8},{col:5,row:8},{col:6,row:8},{col:7,row:8},{col:8,row:8},
+    // Diagonal-ish
+    {col:4,row:10},{col:5,row:10},{col:6,row:10},{col:7,row:10},{col:8,row:10},{col:9,row:10},{col:10,row:10},{col:11,row:10},
+  ];
+
+  let t0, rafId, i = 0, stopped = false;
+  const msPerCell = 130;
+
+  function placeCells() {
+    if (stopped) return;
+    if (i >= paths.length) {
+      cursor.classList.remove('dragging');
+      setTimeout(() => {
+        if (!stopped) ann.classList.add('show');
+      }, 300);
+      return;
+    }
+
+    const {col, row} = paths[i];
+    const x = 20 + col * gridSize;
+    const y = 20 + row * gridSize;
+
+    cursor.style.left = (x - 10) + 'px';
+    cursor.style.top = (y - 10) + 'px';
+    cursor.classList.add('dragging');
+
+    // Place trail dot
+    const td = document.createElement('div');
+    td.className = 'trail-dot';
+    td.style.left = x + 'px';
+    td.style.top = y + 'px';
+    trailContainer.appendChild(td);
+    requestAnimationFrame(() => td.classList.add('show'));
+
+    // Place cell
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    const ci = i % colors.length;
+    cell.style.left = (20 + col * gridSize) + 'px';
+    cell.style.top = (20 + row * gridSize) + 'px';
+    cell.style.background = colors[ci] + '22';
+    cell.style.color = colors[ci];
+    cell.textContent = symbols[ci % symbols.length];
+    cellsContainer.appendChild(cell);
+    requestAnimationFrame(() => cell.classList.add('show'));
+
+    i++;
+    rafId = setTimeout(placeCells, msPerCell);
+  }
+
+  // Start after short delay
+  const startTimer = setTimeout(() => {
+    cursor.style.left = (20 + paths[0].col * 28 - 10) + 'px';
+    cursor.style.top = (20 + paths[0].row * 28 - 10) + 'px';
+    placeCells();
+  }, 600);
+
+  return () => {
+    stopped = true;
+    clearTimeout(startTimer);
+    clearTimeout(rafId);
+    cursor.classList.remove('dragging');
+  };
+}
+
+// ─── SLIDE 1 ANIMATION: Choose Symbol ────────────────────────────────
+function animSlide1() {
+  const cursor = document.getElementById('cursor-1');
+  const sbBtns = [0,1,2,3,4,5,6,7].map(i => document.getElementById('sb-'+i));
+  const ann = document.getElementById('ann-1');
+  const showcase = document.getElementById('sym-showcase');
+  showcase.innerHTML = '';
+  ann.style.opacity = '0';
+
+  const symbols = ['╋','◆','△','◉','✦','⬢','◐','☼'];
+  const colors = ['#e7cc44','#de544a','#c1dc6e','#5bc6e2','#8d69c6','#e97883','#d39c42','#cc3a28'];
+
+  let stopped = false;
+  let timers = [];
+
+  function selectSymbol(idx) {
+    sbBtns.forEach(b => b.classList.remove('active-sym'));
+    if (sbBtns[idx]) {
+      sbBtns[idx].classList.add('active-sym');
+      sbBtns[idx].style.color = colors[idx];
+      sbBtns[idx].style.borderColor = colors[idx];
+      sbBtns[idx].style.background = colors[idx] + '22';
+      sbBtns[idx].style.boxShadow = `0 0 8px ${colors[idx]}55`;
+    }
+
+    // Move cursor to that button position — left panel
+    const top = 16 + idx * 42;
+    cursor.style.left = '62px';
+    cursor.style.top = top + 'px';
+
+    // Add symbol to showcase
+    const row = Math.floor(idx / 4);
+    if (!showcase.children[row]) {
+      const r = document.createElement('div');
+      r.style.display = 'flex';
+      r.style.gap = '12px';
+      showcase.appendChild(r);
+    }
+    const span = document.createElement('span');
+    span.textContent = symbols[idx];
+    span.style.fontSize = '28px';
+    span.style.color = colors[idx];
+    span.style.opacity = '0';
+    span.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+    span.style.transform = 'scale(0.5)';
+    showcase.children[row].appendChild(span);
+    requestAnimationFrame(() => {
+      span.style.opacity = '1';
+      span.style.transform = 'scale(1)';
+    });
+  }
+
+  let i = 0;
+  function cycle() {
+    if (stopped) return;
+    selectSymbol(i % symbols.length);
+    i++;
+    const t = setTimeout(cycle, 600);
+    timers.push(t);
+  }
+
+  const t0 = setTimeout(() => {
+    cycle();
+    const ta = setTimeout(() => {
+      if (!stopped) ann.style.opacity = '1';
+    }, 2000);
+    timers.push(ta);
+  }, 400);
+  timers.push(t0);
+
+  return () => {
+    stopped = true;
+    timers.forEach(clearTimeout);
+  };
+}
+
+// ─── SLIDE 2 ANIMATION: Type Words ───────────────────────────────────
+function animSlide2() {
+  const area = document.getElementById('pixel-word-area');
+  const ann = document.getElementById('ann-2');
+  area.innerHTML = '';
+  ann.classList.remove('show');
+
+  const word = 'ANDEAN';
+  const colors = ['#e7cc44','#de544a','#c1dc6e','#5bc6e2','#8d69c6','#e97883'];
+  const kIds = ['k-A','k-N','k-D','k-E','k-A2','k-N2'];
+
+  let stopped = false;
+  let timers = [];
+  let i = 0;
+
+  function typeChar() {
+    if (stopped || i >= word.length) {
+      if (!stopped) {
+        const t = setTimeout(() => { if(!stopped) ann.classList.add('show'); }, 200);
+        timers.push(t);
+      }
+      return;
+    }
+
+    const letter = word[i];
+    const color = colors[i];
+    const kEl = document.getElementById(kIds[i]);
+
+    // Press key visual
+    if (kEl) {
+      kEl.classList.add('pressed');
+      const t = setTimeout(() => { if(kEl) kEl.classList.remove('pressed'); }, 200);
+      timers.push(t);
+    }
+
+    // Render pixel character
+    const charEl = makePixelChar(letter, color);
+    area.appendChild(charEl);
+    requestAnimationFrame(() => {
+      charEl.style.opacity = '1';
+      charEl.style.transform = 'translateY(0)';
+    });
+
+    i++;
+    // Update type-bar-demo
+    const tbd = document.getElementById('type-bar-demo');
+    if (tbd) tbd.textContent = word.slice(0, i);
+
+    const t2 = setTimeout(typeChar, 500);
+    timers.push(t2);
+  }
+
+  const t0 = setTimeout(typeChar, 700);
+  timers.push(t0);
+
+  return () => {
+    stopped = true;
+    timers.forEach(clearTimeout);
+  };
+}
+function animSlide3() {
+  const cellsContainer = document.getElementById('cells-3');
+  const saveBtn = document.getElementById('save-btn');
+  const flash = document.getElementById('flash-3');
+  const confirm = document.getElementById('save-confirm');
+  const ann = document.getElementById('ann-3');
+  cellsContainer.innerHTML = '';
+  saveBtn.classList.remove('show');
+  saveBtn.classList.remove('click-anim');
+  flash.classList.remove('active');
+  confirm.style.opacity = '0';
+  ann.style.opacity = '0';
+
+  const symbols = ['╋','◆','△','◉','✦','⬢','◐','☼','◇','▤','◈'];
+  const colors = ['#e7cc44','#de544a','#c1dc6e','#5bc6e2','#8d69c6','#e97883','#d39c42','#cc3a28','#8d69c6','#c1dc6e','#e7cc44'];
+
+  let stopped = false;
+  let timers = [];
+
+  // Fill canvas with a completed textile
+  const gridSize = 24;
+  const cols = Math.floor((680 - 48) / gridSize);
+  const rows = Math.floor(540 / gridSize);
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (Math.random() < 0.65) {
+        const idx = (r * 3 + c * 7) % symbols.length;
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.style.width = gridSize + 'px';
+        cell.style.height = gridSize + 'px';
+        cell.style.fontSize = '13px';
+        cell.style.left = (c * gridSize) + 'px';
+        cell.style.top = (r * gridSize) + 'px';
+        cell.style.color = colors[idx];
+        cell.style.background = colors[idx] + '18';
+        cell.textContent = symbols[idx];
+        cellsContainer.appendChild(cell);
+
+        const delay = (r * cols + c) * 8;
+        const t = setTimeout(() => {
+          if (!stopped) cell.classList.add('show');
+        }, delay);
+        timers.push(t);
+      }
+    }
+  }
+
+  // Show button after cells appear
+  const t1 = setTimeout(() => {
+    if (!stopped) {
+      saveBtn.classList.add('show');
+      ann.style.opacity = '1';
+    }
+  }, 1200);
+  timers.push(t1);
+
+  // Simulate click
+  const t2 = setTimeout(() => {
+    if (!stopped) {
+      saveBtn.classList.add('click-anim');
+      const t = setTimeout(() => { if (!stopped && saveBtn) saveBtn.classList.remove('click-anim'); }, 200);
+      timers.push(t);
+    }
+  }, 2200);
+  timers.push(t2);
+
+  // Flash
+  const t3 = setTimeout(() => {
+    if (!stopped) {
+      flash.classList.add('active');
+      const t = setTimeout(() => { if(!stopped) flash.classList.remove('active'); }, 150);
+      timers.push(t);
+    }
+  }, 2400);
+  timers.push(t3);
+
+  // Confirm
+  const t4 = setTimeout(() => {
+    if (!stopped) confirm.style.opacity = '1';
+  }, 2600);
+  timers.push(t4);
+
+  return () => {
+    stopped = true;
+    timers.forEach(clearTimeout);
+  };
+}
+
+// ─── ANIMATION MAP ───────────────────────────────────────────────────
+const animFns = [animSlide0, animSlide1, animSlide2, animSlide3];
+
+function startSlideAnimation(idx) {
+  if (stopperFns[idx]) stopperFns[idx]();
+  stopperFns[idx] = animFns[idx]();
+}
+
+// ─── BOOT ─────────────────────────────────────────────────────────────
+const titleOverlay = document.getElementById('titleOverlay');
+setTimeout(() => {
+  titleOverlay.classList.add('hide');
+  startSlideAnimation(0);
+  slideTimeout = setTimeout(() => goToSlide(1), SLIDE_DURATIONS[0]);
+}, 2000);
+
+</script>
+</body>
+</html>

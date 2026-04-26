@@ -1,0 +1,2172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIGITAL ANDES • Dayana 2026</title>
+    <link rel="stylesheet" href="styles.css">
+
+<style id="tutorial-styles">
+
+/* ── Tutorial embed — fully fluid for 27" 5K (DPR=2 → ~1280 CSS px wide)
+   All sizes use clamp(min, preferred-vw/vh, max).
+   Calibrated to 1280×800 CSS viewport (5K iMac, DPR=2).
+   Scales continuously 768px – 1920px. ── */
+
+#tutorial-embed {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #0a0a0a;
+  font-family: 'Space Mono', monospace;
+  color: #f5f5f5;
+  overflow: hidden;
+
+  --golden: #e7cc44;
+  --coral:  #de544a;
+  --cyan:   #5bc6e2;
+  --lime:   #c1dc6e;
+  --purple: #8d69c6;
+  --pink:   #e97883;
+  --bg:     #0a0a0a;
+  --panel:  #111111;
+  --border: rgba(255,255,255,0.08);
+
+  --t-badge:     clamp(2rem,   4.2vw, 5rem);
+  --t-title:     clamp(1.3rem, 2vw,   2.4rem);
+  --t-desc:      clamp(0.65rem,0.78vw,0.88rem);
+  --t-key:       clamp(0.58rem,0.68vw,0.78rem);
+  --t-ann:       clamp(0.52rem,0.6vw, 0.72rem);
+  --t-auto:      clamp(0.48rem,0.56vw,0.66rem);
+  --t-overlay:   clamp(1.8rem, 4.5vw, 4.8rem);
+  --t-overlay-p: clamp(0.62rem,0.75vw,0.88rem);
+  --t-save:      clamp(0.85rem,1.05vw,1.3rem);
+  --t-kbd:       clamp(0.75rem,0.9vw,  1.1rem);
+  --t-sym:       clamp(11px,   1.2vw,  16px);
+  --t-nav:       clamp(0.75rem,0.9vw,  1.1rem);
+
+  --strip-w:    clamp(160px, 20vw, 280px);
+  --strip-pad:  clamp(1.2rem,2.2vw,2.8rem);
+  --cell-sz:    clamp(20px,  2.4vw,  34px);
+  --kbd-w:      clamp(28px,  3.2vw,  46px);
+  --kbd-h:      clamp(34px,  3.8vw,  54px);
+  --sym-btn-sz: clamp(26px,  2.8vw,  40px);
+  --sidebar-w:  clamp(38px,  4.2vw,  58px);
+  --nav-sz:     clamp(26px,  2.8vw,  40px);
+  --save-pad-v: clamp(0.55rem,0.8vh, 1rem);
+  --save-pad-h: clamp(1.2rem, 1.8vw, 2.4rem);
+}
+
+#tutorial-embed * { margin: 0; padding: 0; box-sizing: border-box; }
+
+#tutorial-embed .slide {
+  position: absolute; inset: 0; display: flex;
+  opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
+}
+#tutorial-embed .slide.active { opacity: 1; pointer-events: all; }
+
+#tutorial-embed .label-strip {
+  width: var(--strip-w);
+  flex-shrink: 0;
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; justify-content: center;
+  padding: var(--strip-pad);
+  position: relative; z-index: 10;
+  gap: clamp(0.5rem,0.9vh,1.2rem);
+}
+
+#tutorial-embed .step-badge {
+  font-family: 'Space Mono', monospace;
+  font-size: var(--t-badge);
+  line-height: 1; color: var(--coral); opacity: 0.2;
+}
+#tutorial-embed .step-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: var(--t-title);
+  letter-spacing: 0.08em; line-height: 1.1;
+}
+#tutorial-embed .step-desc {
+  font-family: 'Space Mono', monospace;
+  font-weight: 300; font-size: var(--t-desc);
+  line-height: 1.75; color: var(--cyan); opacity: 0.85;
+}
+#tutorial-embed .step-key {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+  padding: clamp(0.32rem,0.5vh,0.6rem) clamp(0.5rem,0.8vw,0.9rem);
+  font-size: var(--t-key); letter-spacing: 0.1em; color: var(--golden); white-space: nowrap;
+}
+
+#tutorial-embed .demo-area {
+  flex: 1; position: relative; background: #0d0d0d; overflow: hidden;
+}
+#tutorial-embed .demo-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: var(--cell-sz) var(--cell-sz);
+}
+
+#tutorial-embed .cell {
+  position: absolute;
+  width: var(--cell-sz); height: var(--cell-sz);
+  display: flex; align-items: center; justify-content: center;
+  font-size: calc(var(--cell-sz) * 0.58);
+  border-radius: 2px; opacity: 0; transform: scale(0.5);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+#tutorial-embed .cell.show { opacity: 1; transform: scale(1); }
+
+#tutorial-embed .cursor {
+  position: absolute;
+  width: clamp(14px,1.6vw,22px); height: clamp(14px,1.6vw,22px);
+  border: 2px solid var(--golden); border-radius: 50%;
+  pointer-events: none; z-index: 50;
+  transition: left 0.4s cubic-bezier(0.25,0.1,0.25,1), top 0.4s cubic-bezier(0.25,0.1,0.25,1);
+}
+#tutorial-embed .cursor::after {
+  content: ''; position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: clamp(3px,0.3vw,5px); height: clamp(3px,0.3vw,5px);
+  background: var(--golden); border-radius: 50%;
+}
+#tutorial-embed .cursor.dragging { border-color: var(--coral); box-shadow: 0 0 12px var(--coral); }
+#tutorial-embed .cursor.dragging::after { background: var(--coral); }
+
+#tutorial-embed .trail-dot {
+  position: absolute;
+  width: clamp(3px,0.35vw,5px); height: clamp(3px,0.35vw,5px);
+  background: var(--coral); border-radius: 50%;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+}
+#tutorial-embed .trail-dot.show { opacity: 0.6; }
+
+#tutorial-embed .sidebar-hint {
+  position: absolute; right: 0; top: 0; bottom: 0;
+  width: var(--sidebar-w); background: rgba(10,10,10,0.95);
+  border-left: 1px solid var(--border);
+  display: flex; flex-direction: column; align-items: center;
+  padding: clamp(0.6rem,1vh,1.2rem) 0;
+  gap: clamp(0.45rem,0.7vh,0.9rem); z-index: 20;
+}
+
+#tutorial-embed .sym-btn {
+  width: var(--sym-btn-sz); height: var(--sym-btn-sz);
+  display: flex; align-items: center; justify-content: center;
+  font-size: var(--t-sym); border: 1px solid transparent;
+  border-radius: 2px; cursor: pointer; transition: all 0.2s;
+  color: rgba(255,255,255,0.5);
+}
+#tutorial-embed .sym-btn.active-sym {
+  border-color: var(--golden); color: var(--golden);
+  background: rgba(231,204,68,0.1); box-shadow: 0 0 8px rgba(231,204,68,0.3);
+}
+
+#tutorial-embed .kbd-display {
+  position: absolute;
+  bottom: clamp(1.2rem,2.5vh,3rem); left: 50%; transform: translateX(-50%);
+  display: flex; gap: clamp(3px,0.4vw,6px); z-index: 30;
+}
+#tutorial-embed .kbd-key {
+  width: var(--kbd-w); height: var(--kbd-h);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-bottom: 3px solid rgba(255,255,255,0.1);
+  border-radius: 4px; display: flex; align-items: center; justify-content: center;
+  font-family: 'Space Mono', monospace; font-size: var(--t-kbd);
+  color: rgba(255,255,255,0.4); transition: all 0.15s ease;
+}
+#tutorial-embed .kbd-key.pressed {
+  background: rgba(231,204,68,0.15); border-color: var(--golden);
+  border-bottom-color: rgba(231,204,68,0.3); color: var(--golden);
+  transform: translateY(2px); box-shadow: 0 0 10px rgba(231,204,68,0.25);
+}
+
+#tutorial-embed .typed-word {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%); z-index: 25;
+  display: flex; gap: clamp(3px,0.4vw,6px);
+}
+#tutorial-embed .typed-char {
+  display: inline-flex; flex-direction: column;
+  gap: clamp(1px,0.15vw,2px);
+  opacity: 0; transform: translateY(10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+#tutorial-embed .typed-char.show { opacity: 1; transform: translateY(0); }
+
+#tutorial-embed .color-dot {
+  width: clamp(20px,2.4vw,32px); height: clamp(20px,2.4vw,32px);
+  border-radius: 50%; border: 2px solid transparent;
+  transition: all 0.2s; cursor: pointer; flex-shrink: 0;
+}
+#tutorial-embed .color-dot.selected {
+  border-color: white; transform: scale(1.2); box-shadow: 0 0 10px currentColor;
+}
+
+#tutorial-embed .progress-bar {
+  position: absolute;
+  bottom: clamp(0.7rem,1.2vh,1.4rem); left: 50%; transform: translateX(-50%);
+  display: flex; gap: clamp(4px,0.5vw,8px); z-index: 200;
+}
+#tutorial-embed .prog-dot {
+  width: clamp(5px,0.55vw,8px); height: clamp(5px,0.55vw,8px);
+  border-radius: 50%; background: rgba(255,255,255,0.2); transition: all 0.3s;
+}
+#tutorial-embed .prog-dot.active {
+  background: var(--golden); width: clamp(14px,1.6vw,22px); border-radius: 3px;
+}
+
+#tutorial-embed .save-btn-demo {
+  position: absolute;
+  bottom: clamp(1.8rem,3.5vh,4.5rem); left: 50%; transform: translateX(-50%);
+  background: var(--coral); color: white;
+  font-family: 'Bebas Neue', sans-serif; font-size: var(--t-save);
+  letter-spacing: 0.15em;
+  padding: var(--save-pad-v) var(--save-pad-h);
+  border: none; cursor: pointer;
+  display: flex; align-items: center; gap: clamp(0.4rem,0.6vw,0.85rem);
+  z-index: 30; opacity: 0; white-space: nowrap;
+  transition: opacity 0.4s ease, transform 0.2s ease;
+}
+#tutorial-embed .save-btn-demo.show { opacity: 1; }
+#tutorial-embed .save-btn-demo.click-anim {
+  transform: translateX(-50%) scale(0.95); filter: brightness(1.2);
+}
+#tutorial-embed .save-icon { font-size: var(--t-save); }
+
+#tutorial-embed .flash {
+  position: absolute; inset: 0; background: white;
+  opacity: 0; pointer-events: none; z-index: 100; transition: opacity 0.1s ease;
+}
+#tutorial-embed .flash.active { opacity: 0.6; }
+
+#tutorial-embed .annotation {
+  position: absolute; font-size: var(--t-ann);
+  font-family: 'Space Mono', monospace; letter-spacing: 0.1em;
+  color: var(--golden); opacity: 0; transition: opacity 0.4s ease;
+  z-index: 40; white-space: nowrap;
+}
+#tutorial-embed .annotation.show { opacity: 1; }
+#tutorial-embed .annotation .ann-line {
+  display: block; width: clamp(28px,3vw,48px); height: 1px;
+  background: var(--golden); margin-top: clamp(2px,0.4vh,5px); opacity: 0.5;
+}
+
+#tutorial-embed .title-overlay {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: var(--bg); z-index: 200; transition: opacity 0.8s ease;
+  gap: clamp(0.5rem,1vh,1.2rem);
+}
+#tutorial-embed .title-overlay.hide { opacity: 0; pointer-events: none; }
+#tutorial-embed .title-overlay h1 {
+  font-family: 'Space Mono', monospace; font-size: var(--t-overlay);
+  text-align: center; line-height: 0.9;
+}
+#tutorial-embed .title-overlay h1 span { display: block; }
+#tutorial-embed .title-overlay h1 span:nth-child(1) { color: var(--lime); }
+#tutorial-embed .title-overlay h1 span:nth-child(2) { color: var(--golden); }
+#tutorial-embed .title-overlay h1 span:nth-child(3) { color: var(--coral); }
+#tutorial-embed .title-overlay p {
+  font-size: var(--t-overlay-p); letter-spacing: 0.25em; color: var(--cyan);
+}
+#tutorial-embed .title-bar {
+  width: clamp(40px,4.5vw,70px); height: clamp(2px,0.3vh,4px);
+  background: var(--coral); animation: expandBar 1s ease 0.5s forwards;
+  transform: scaleX(0); transform-origin: left;
+}
+@keyframes expandBar { to { transform: scaleX(1); } }
+
+#tutorial-embed .nav-arrows {
+  position: absolute;
+  bottom: clamp(0.7rem,1.2vh,1.4rem); right: clamp(1rem,1.4vw,2rem);
+  display: flex; gap: clamp(4px,0.5vw,8px); z-index: 200;
+}
+#tutorial-embed .nav-arr {
+  width: var(--nav-sz); height: var(--nav-sz);
+  background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+  color: rgba(255,255,255,0.4); display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: var(--t-nav); transition: all 0.2s;
+  font-family: 'Space Mono', monospace;
+}
+#tutorial-embed .nav-arr:hover {
+  background: rgba(231,204,68,0.1); border-color: var(--golden); color: var(--golden);
+}
+
+#tutorial-embed .auto-badge {
+  position: absolute;
+  top: clamp(0.7rem,1.2vh,1.4rem); right: clamp(1rem,1.4vw,2rem);
+  font-size: var(--t-auto); letter-spacing: 0.15em;
+  color: rgba(255,255,255,0.25); z-index: 200;
+}
+
+</style>
+</head>
+<body>
+    <div class="noise-overlay"></div>
+    <div class="grain"></div>
+
+    <main class="content-container">
+
+        <!-- PERSISTENT TAB STRIP -->
+        <nav class="tab-strip">
+            <button class="nav-tab active" data-tab="home">
+                <span class="tab-number">01</span>
+                <span class="tab-label">HOME</span>
+            </button>
+            <button class="nav-tab" data-tab="instructions">
+                <span class="tab-number">02</span>
+                <span class="tab-label">INSTRUCTIONS</span>
+            </button>
+            <button class="nav-tab" data-tab="canvas">
+                <span class="tab-number">03</span>
+                <span class="tab-label">CANVAS</span>
+            </button>
+            <button class="nav-tab archive-tab" data-tab="archive">
+                <span class="tab-number">04</span>
+                <span class="tab-label">ARCHIVE</span>
+                <span class="archive-count" id="archive-count"></span>
+            </button>
+        </nav>
+
+        <!-- HOME TAB -->
+        <section id="home" class="tab-content active">
+            <div class="home-layout">
+
+                <!-- HEADER ROW: title + tagline -->
+                <div class="home-header">
+                    <div class="home-header-left">
+                        <span class="home-eyebrow">◈ Digital Craft Studio · 2026</span>
+                        <canvas id="woven-title-canvas" class="woven-title-canvas"></canvas>
+                    </div>
+                    <div class="home-header-right">
+                        <p class="home-desc">Merging ancestral Andean textile patterns<br>with contemporary digital expression.</p>
+                        <button class="cta-button" onclick="switchTab('instructions')">
+                            BEGIN WEAVING
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- GALLERY ROW: all tiles equal -->
+                <div class="home-gallery">
+                    <div class="textile-item canvas" id="canvas-replica-1"></div>
+                    <div class="textile-item photo"><img src="vibrant-andean-textiles.jpeg" alt="Andean pattern"></div>
+                    <div class="textile-item canvas" id="canvas-replica-2"></div>
+                    <div class="textile-item photo"><img src="istockphoto-621367868-612x612.jpg" alt="Andean textile"></div>
+                    <div class="textile-item canvas" id="canvas-replica-3"></div>
+                    <div class="textile-item photo"><img src="vibrant-andean-textiles.jpg copy-1 (dragged) 2.jpeg" alt="Andean stripes"></div>
+                    <div class="textile-item canvas" id="canvas-replica-4"></div>
+                    <div class="textile-item photo"><img src="1000_F_153017952_gKyts2V2h1kxuf6cr2SdKtcR1sbag2bC.jpg" alt="Andean textile"></div>
+                </div>
+
+                <!-- INFO ROW: three equal cells -->
+                <div class="home-info-row">
+                    <div class="home-info-cell">
+                        <span class="info-num">01</span>
+                        <h2 class="info-label">ABOUT</h2>
+                        <p>Merging ancestral Andean textile patterns with contemporary digital expression. Create woven designs using traditional symbols, vibrant natural dyes, and time-honored compositional techniques.</p>
+                    </div>
+                    <div class="home-info-div"></div>
+                    <div class="home-info-cell">
+                        <span class="info-num">02</span>
+                        <h2 class="info-label">HERITAGE</h2>
+                        <p>Encoding cosmological beliefs and ecological wisdom into every thread. Each symbol carries meaning—from mountain peaks to water flows, celestial bodies to agricultural cycles.</p>
+                    </div>
+                    <div class="home-info-div"></div>
+                    <div class="home-info-cell">
+                        <span class="info-num">03</span>
+                        <h2 class="info-label">TECHNIQUE</h2>
+                        <p>Navigate the digital loom to explore pattern-making. Type to form words in traditional letterforms. Click and drag to weave custom motifs.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- INSTRUCTIONS TAB -->
+        <section id="instructions" class="tab-content">
+            <div class="instructions-layout">
+                <h1 class="page-title glitch" data-text="INSTRUCTIONS">INSTRUCTIONS</h1>
+                <div class="tutorial-embed-wrapper">
+                    <div id="tutorial-embed">
+<!-- TITLE INTRO OVERLAY -->
+<div class="title-overlay" id="titleOverlay">
+  <h1>
+    <span>HOW TO</span>
+    <span>WEAVE</span>
+    <span>YOUR TEXTILE</span>
+  </h1>
+  <div class="title-bar"></div>
+  <p>4 STEPS · FEELING STUDIO 2026</p>
+</div>
+
+<!-- AUTO badge -->
+<div class="auto-badge">AUTO ↻</div>
+
+<!-- PROGRESS DOTS (outside slides, always visible) -->
+<div class="progress-bar" id="progressBar">
+  <div class="prog-dot active"></div>
+  <div class="prog-dot"></div>
+  <div class="prog-dot"></div>
+  <div class="prog-dot"></div>
+</div>
+
+<!-- NAV ARROWS -->
+<div class="nav-arrows">
+  <div class="nav-arr" id="prevBtn">←</div>
+  <div class="nav-arr" id="nextBtn">→</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SLIDE 1: CLICK & DRAG TO WEAVE -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="slide active" id="slide-0">
+  <div class="label-strip">
+    <div class="step-badge">01</div>
+    <div class="step-title" style="color: var(--coral)">CLICK &amp; DRAG<br>TO WEAVE</div>
+    <div class="step-desc">Click anywhere on the canvas and drag to paint Andean symbols into the grid. Each cell fills with your active symbol. Slow, deliberate strokes create the most intricate patterns — a speed warning appears if you rush.</div>
+    <div class="step-key">🖱 CLICK + DRAG</div>
+  </div>
+  <div class="demo-area" id="demo-0">
+    <div class="demo-grid"></div>
+
+    <!-- Pre-drawn static cells (subtle bg) -->
+    <!-- Dynamic cells rendered by JS -->
+    <div id="cells-0"></div>
+
+    <!-- Trail dots -->
+    <div id="trail-0"></div>
+
+    <!-- Cursor -->
+    <div class="cursor" id="cursor-0" style="left: 80px; top: 100px"></div>
+
+    <!-- Annotation -->
+    <div class="annotation" id="ann-0" style="top: 60px; left: 120px">
+      DRAG TO PLACE SYMBOLS
+      <span class="ann-line"></span>
+    </div>
+
+    <!-- Left controls panel hint -->
+    <div class="sidebar-hint" style="left:0; right:auto; border-left:none; border-right:1px solid var(--border);">
+      <div class="sym-btn active-sym">╋</div>
+      <div class="sym-btn">◆</div>
+      <div class="sym-btn">△</div>
+      <div class="sym-btn">◉</div>
+      <div class="sym-btn">✦</div>
+      <div class="sym-btn">◐</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SLIDE 2: CHOOSE ANY SYMBOL -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="slide" id="slide-1">
+  <div class="label-strip">
+    <div class="step-badge">02</div>
+    <div class="step-title" style="color: var(--golden)">CHOOSE<br>ANY SYMBOL</div>
+    <div class="step-desc">Pick from 28 traditional Andean motifs in the SYMBOLS section of the left controls panel — crosses, diamonds, celestial forms, chevrons, and more. Your active symbol highlights in gold.</div>
+    <div class="step-key">← LEFT PANEL</div>
+  </div>
+  <div class="demo-area" id="demo-1">
+    <div class="demo-grid"></div>
+    <div id="cells-1"></div>
+    <div class="cursor" id="cursor-1" style="left: 300px; top: 150px"></div>
+
+    <!-- Symbol grid demonstration -->
+    <div id="sym-showcase" style="position:absolute; top:50%; left:45%; transform:translate(-50%,-50%); display:flex; flex-direction:column; gap:8px; z-index:20"></div>
+
+    <!-- Sidebar with more symbols -->
+    <div class="sidebar-hint" id="sidebar-1" style="left:0; right:auto; border-left:none; border-right:1px solid var(--border);">
+      <div class="sym-btn" id="sb-0">╋</div>
+      <div class="sym-btn" id="sb-1">◆</div>
+      <div class="sym-btn" id="sb-2">△</div>
+      <div class="sym-btn" id="sb-3">◉</div>
+      <div class="sym-btn" id="sb-4">✦</div>
+      <div class="sym-btn" id="sb-5">⬢</div>
+      <div class="sym-btn" id="sb-6">◐</div>
+      <div class="sym-btn" id="sb-7">☼</div>
+    </div>
+
+    <div class="annotation show" id="ann-1" style="bottom: 80px; left: 40px; opacity:0">
+      28 ANDEAN SYMBOLS
+      <span class="ann-line"></span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SLIDE 3: TYPE TO SPELL WORDS -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="slide" id="slide-2">
+  <div class="label-strip">
+    <div class="step-badge">03</div>
+    <div class="step-title" style="color: var(--lime)">TYPE TO<br>SPELL WORDS</div>
+    <div class="step-desc">Click the canvas first, then press any letter keys to weave pixel words into the grid. A TYPE bar at the top shows your current word. Press Backspace to delete a letter, or Enter to clear the word.</div>
+    <div class="step-key">⌨ CLICK CANVAS · A–Z</div>
+  </div>
+  <div class="demo-area" id="demo-2">
+    <div class="demo-grid"></div>
+
+    <!-- Pixel word display area -->
+    <div id="pixel-word-area" style="position:absolute; top:30%; left:50%; transform:translateX(-50%); display:flex; gap:8px; z-index:25"></div>
+
+    <!-- Keyboard row -->
+    <div class="kbd-display" id="kbd-display">
+      <div class="kbd-key" id="k-A">A</div>
+      <div class="kbd-key" id="k-N">N</div>
+      <div class="kbd-key" id="k-D">D</div>
+      <div class="kbd-key" id="k-E">E</div>
+      <div class="kbd-key" id="k-A2">A</div>
+      <div class="kbd-key" id="k-N2">N</div>
+    </div>
+
+    <div class="annotation" id="ann-2" style="top:18%; left:50%; transform:translateX(-50%)">
+      WORDS WOVEN IN PIXEL LETTERFORMS
+      <span class="ann-line" style="margin:0 auto"></span>
+    </div>
+
+    <!-- Type bar replica -->
+    <div style="position:absolute; top:8px; left:var(--sidebar-w,52px); right:0; height:clamp(26px,3.5vh,38px); background:rgba(255,255,255,0.04); border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; padding:0 12px; z-index:30; font-family:'Space Mono',monospace; font-size:var(--t-key,0.62rem); letter-spacing:0.12em;">
+      <span style="color:var(--golden); opacity:0.7">TYPE</span>
+      <span id="type-bar-demo" style="color:#f5f5f5; opacity:0.9"></span><span style="color:var(--golden); animation:blink 1s step-end infinite">_</span>
+      <span style="margin-left:auto; color:rgba(255,255,255,0.25); font-size:var(--t-ann,0.55rem)">ENTER TO CLEAR</span>
+    </div>
+    <style>@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}</style>
+
+    <div class="sidebar-hint" style="left:0; right:auto; border-left:none; border-right:1px solid var(--border);">
+      <div class="sym-btn active-sym">◆</div>
+      <div class="sym-btn">△</div>
+      <div class="sym-btn">◉</div>
+      <div class="sym-btn">✦</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SLIDE 4: SAVE PNG -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="slide" id="slide-3">
+  <div class="label-strip">
+    <div class="step-badge">04</div>
+    <div class="step-title" style="color: var(--cyan)">SAVE<br>YOUR PNG</div>
+    <div class="step-desc">When your textile is ready, click SAVE PNG in the left controls panel. Your creation is exported as a full-resolution PNG and added to your Archive — where you can revisit and expand it anytime.</div>
+    <div class="step-key">↓ LEFT PANEL → SAVE PNG</div>
+  </div>
+  <div class="demo-area" id="demo-3">
+    <div class="demo-grid"></div>
+
+    <!-- Final composition with many cells -->
+    <div id="cells-3"></div>
+
+    <!-- Flash effect -->
+    <div class="flash" id="flash-3"></div>
+
+    <!-- Save button -->
+    <button class="save-btn-demo" id="save-btn" onclick="">
+      <span class="save-icon">↓</span>
+      SAVE PNG
+    </button>
+
+    <!-- Download success -->
+    <div id="save-confirm" style="position:absolute; top:clamp(1rem,2vh,2.5rem); left:50%; transform:translateX(-50%); font-family:'Bebas Neue',sans-serif; font-size:var(--t-save,1rem); letter-spacing:0.15em; color:var(--lime); opacity:0; transition: opacity 0.4s ease; white-space:nowrap; z-index:50">
+      ✓ SAVED TO ARCHIVE
+    </div>
+
+    <div class="annotation" id="ann-3" style="bottom:7rem; left:50%; transform:translateX(-50%); text-align:center; opacity:0">
+      EXPORTS YOUR FULL CANVAS
+    </div>
+
+    <!-- Left controls panel replica -->
+    <div class="sidebar-hint" style="left:0; right:auto; border-left:none; border-right:1px solid var(--border); width:60px; padding-top:0.5rem; gap:0.5rem;">
+      <div class="sym-btn" style="font-size:9px; letter-spacing:0.04em; color:rgba(255,255,255,0.3)">━</div>
+      <div class="sym-btn" style="font-size:9px; letter-spacing:0.04em; color:rgba(255,255,255,0.3)">CONN</div>
+      <div style="width:32px; height:1px; background:var(--border);"></div>
+      <div class="sym-btn" style="font-size:11px; color:var(--coral)">↻</div>
+      <div class="sym-btn active-sym" style="font-size:11px; color:var(--lime); border-color:var(--lime); background:rgba(193,220,110,0.1)">↓</div>
+      <div class="sym-btn" style="font-size:11px; color:rgba(255,255,255,0.3)">?</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── PIXEL FONT (5x7) ───────────────────────────────────────────────
+const PIXELS = {
+  A: [[0,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1]],
+  N: [[1,0,0,0,1],[1,1,0,0,1],[1,0,1,0,1],[1,0,0,1,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1]],
+  D: [[1,1,1,0,0],[1,0,0,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,1,0],[1,1,1,0,0]],
+  E: [[1,1,1,1,1],[1,0,0,0,0],[1,0,0,0,0],[1,1,1,1,0],[1,0,0,0,0],[1,0,0,0,0],[1,1,1,1,1]],
+};
+
+function makePixelChar(letter, color) {
+  const rows = PIXELS[letter] || PIXELS['A'];
+  const wrap = document.createElement('div');
+  wrap.style.display = 'flex';
+  wrap.style.flexDirection = 'column';
+  wrap.style.gap = '2px';
+  wrap.style.opacity = '0';
+  wrap.style.transform = 'translateY(12px)';
+  wrap.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+  rows.forEach(row => {
+    const rowEl = document.createElement('div');
+    rowEl.style.display = 'flex';
+    rowEl.style.gap = '2px';
+    row.forEach(on => {
+      const px = document.createElement('div');
+      px.style.width = '8px';
+      px.style.height = '8px';
+      px.style.borderRadius = '1px';
+      px.style.background = on ? color : 'transparent';
+      rowEl.appendChild(px);
+    });
+    wrap.appendChild(rowEl);
+  });
+  return wrap;
+}
+
+// ─── SLIDE MANAGEMENT ───────────────────────────────────────────────
+const slides = document.querySelectorAll('.slide');
+const progDots = document.querySelectorAll('.prog-dot');
+let currentSlide = 0;
+let slideTimeout = null;
+const SLIDE_DURATIONS = [5200, 5500, 6000, 5500];
+let stopperFns = [];
+
+function goToSlide(idx) {
+  if (slideTimeout) clearTimeout(slideTimeout);
+  if (stopperFns[currentSlide]) stopperFns[currentSlide]();
+
+  slides[currentSlide].classList.remove('active');
+  progDots[currentSlide].classList.remove('active');
+
+  currentSlide = (idx + slides.length) % slides.length;
+
+  slides[currentSlide].classList.add('active');
+  progDots[currentSlide].classList.add('active');
+
+  startSlideAnimation(currentSlide);
+  slideTimeout = setTimeout(() => goToSlide(currentSlide + 1), SLIDE_DURATIONS[currentSlide]);
+}
+
+document.getElementById('nextBtn').onclick = () => goToSlide(currentSlide + 1);
+document.getElementById('prevBtn').onclick = () => goToSlide(currentSlide - 1);
+
+// ─── SLIDE 0 ANIMATION: Click & Drag ─────────────────────────────────
+function animSlide0() {
+  const cursor = document.getElementById('cursor-0');
+  const cellsContainer = document.getElementById('cells-0');
+  const trailContainer = document.getElementById('trail-0');
+  const ann = document.getElementById('ann-0');
+  cellsContainer.innerHTML = '';
+  trailContainer.innerHTML = '';
+  ann.classList.remove('show');
+
+  const symbols = ['╋','◆','△','◉','✦','◇','▬'];
+  const colors = ['#e7cc44','#de544a','#c1dc6e','#5bc6e2','#8d69c6','#e97883','#d39c42'];
+
+  // Fluid grid size — read from computed CSS custom property
+  const demo = document.getElementById('demo-0');
+  const cellPx = parseFloat(getComputedStyle(demo).getPropertyValue('--cell-sz')) || 28;
+  const gridSize = Math.round(cellPx);
+  const paths = [
+    // Horizontal sweep
+    {col:2, row:3},{col:3,row:3},{col:4,row:3},{col:5,row:3},{col:6,row:3},
+    {col:7,row:3},{col:8,row:3},{col:9,row:3},{col:10,row:3},
+    // Go down
+    {col:10,row:4},{col:10,row:5},{col:10,row:6},
+    // Horizontal back
+    {col:9,row:6},{col:8,row:6},{col:7,row:6},{col:6,row:6},{col:5,row:6},
+    // Another row
+    {col:3,row:8},{col:4,row:8},{col:5,row:8},{col:6,row:8},{col:7,row:8},{col:8,row:8},
+    // Diagonal-ish
+    {col:4,row:10},{col:5,row:10},{col:6,row:10},{col:7,row:10},{col:8,row:10},{col:9,row:10},{col:10,row:10},{col:11,row:10},
+  ];
+
+  let t0, rafId, i = 0, stopped = false;
+  const msPerCell = 130;
+
+  function placeCells() {
+    if (stopped) return;
+    if (i >= paths.length) {
+      cursor.classList.remove('dragging');
+      setTimeout(() => {
+        if (!stopped) ann.classList.add('show');
+      }, 300);
+      return;
+    }
+
+    const {col, row} = paths[i];
+    const x = 20 + col * gridSize;
+    const y = 20 + row * gridSize;
+
+    cursor.style.left = (x - 10) + 'px';
+    cursor.style.top = (y - 10) + 'px';
+    cursor.classList.add('dragging');
+
+    // Place trail dot
+    const td = document.createElement('div');
+    td.className = 'trail-dot';
+    td.style.left = x + 'px';
+    td.style.top = y + 'px';
+    trailContainer.appendChild(td);
+    requestAnimationFrame(() => td.classList.add('show'));
+
+    // Place cell
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    const ci = i % colors.length;
+    cell.style.left = (20 + col * gridSize) + 'px';
+    cell.style.top = (20 + row * gridSize) + 'px';
+    cell.style.background = colors[ci] + '22';
+    cell.style.color = colors[ci];
+    cell.textContent = symbols[ci % symbols.length];
+    cellsContainer.appendChild(cell);
+    requestAnimationFrame(() => cell.classList.add('show'));
+
+    i++;
+    rafId = setTimeout(placeCells, msPerCell);
+  }
+
+  // Start after short delay
+  const startTimer = setTimeout(() => {
+    cursor.style.left = (20 + paths[0].col * gridSize - 10) + 'px';
+    cursor.style.top = (20 + paths[0].row * gridSize - 10) + 'px';
+    placeCells();
+  }, 600);
+
+  return () => {
+    stopped = true;
+    clearTimeout(startTimer);
+    clearTimeout(rafId);
+    cursor.classList.remove('dragging');
+  };
+}
+
+// ─── SLIDE 1 ANIMATION: Choose Symbol ────────────────────────────────
+function animSlide1() {
+  const cursor = document.getElementById('cursor-1');
+  const sbBtns = [0,1,2,3,4,5,6,7].map(i => document.getElementById('sb-'+i));
+  const ann = document.getElementById('ann-1');
+  const showcase = document.getElementById('sym-showcase');
+  showcase.innerHTML = '';
+  ann.style.opacity = '0';
+
+  const symbols = ['╋','◆','△','◉','✦','⬢','◐','☼'];
+  const colors = ['#e7cc44','#de544a','#c1dc6e','#5bc6e2','#8d69c6','#e97883','#d39c42','#cc3a28'];
+
+  let stopped = false;
+  let timers = [];
+
+  function selectSymbol(idx) {
+    sbBtns.forEach(b => b.classList.remove('active-sym'));
+    if (sbBtns[idx]) {
+      sbBtns[idx].classList.add('active-sym');
+      sbBtns[idx].style.color = colors[idx];
+      sbBtns[idx].style.borderColor = colors[idx];
+      sbBtns[idx].style.background = colors[idx] + '22';
+      sbBtns[idx].style.boxShadow = `0 0 8px ${colors[idx]}55`;
+    }
+
+    // Move cursor to that button position — left panel
+    const symBtnSz = parseFloat(getComputedStyle(document.getElementById('tutorial-embed')).getPropertyValue('--sym-btn-sz')) || 32;
+    const gap = symBtnSz * 0.55;
+    const top = 14 + idx * (symBtnSz + gap);
+    cursor.style.left = (parseFloat(getComputedStyle(document.getElementById('tutorial-embed')).getPropertyValue('--sidebar-w')) + 8) + 'px';
+    cursor.style.top = top + 'px';
+
+    // Add symbol to showcase
+    const row = Math.floor(idx / 4);
+    if (!showcase.children[row]) {
+      const r = document.createElement('div');
+      r.style.display = 'flex';
+      r.style.gap = '12px';
+      showcase.appendChild(r);
+    }
+    const span = document.createElement('span');
+    span.textContent = symbols[idx];
+    const showcaseFontSz = Math.round(parseFloat(getComputedStyle(document.getElementById('tutorial-embed')).getPropertyValue('--cell-sz')) * 1.1);
+    span.style.fontSize = showcaseFontSz + 'px';
+    span.style.color = colors[idx];
+    span.style.opacity = '0';
+    span.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+    span.style.transform = 'scale(0.5)';
+    showcase.children[row].appendChild(span);
+    requestAnimationFrame(() => {
+      span.style.opacity = '1';
+      span.style.transform = 'scale(1)';
+    });
+  }
+
+  let i = 0;
+  function cycle() {
+    if (stopped) return;
+    selectSymbol(i % symbols.length);
+    i++;
+    const t = setTimeout(cycle, 600);
+    timers.push(t);
+  }
+
+  const t0 = setTimeout(() => {
+    cycle();
+    const ta = setTimeout(() => {
+      if (!stopped) ann.style.opacity = '1';
+    }, 2000);
+    timers.push(ta);
+  }, 400);
+  timers.push(t0);
+
+  return () => {
+    stopped = true;
+    timers.forEach(clearTimeout);
+  };
+}
+
+// ─── SLIDE 2 ANIMATION: Type Words ───────────────────────────────────
+function animSlide2() {
+  const area = document.getElementById('pixel-word-area');
+  const ann = document.getElementById('ann-2');
+  area.innerHTML = '';
+  ann.classList.remove('show');
+
+  const word = 'ANDEAN';
+  const colors = ['#e7cc44','#de544a','#c1dc6e','#5bc6e2','#8d69c6','#e97883'];
+  const kIds = ['k-A','k-N','k-D','k-E','k-A2','k-N2'];
+
+  let stopped = false;
+  let timers = [];
+  let i = 0;
+
+  function typeChar() {
+    if (stopped || i >= word.length) {
+      if (!stopped) {
+        const t = setTimeout(() => { if(!stopped) ann.classList.add('show'); }, 200);
+        timers.push(t);
+      }
+      return;
+    }
+
+    const letter = word[i];
+    const color = colors[i];
+    const kEl = document.getElementById(kIds[i]);
+
+    // Press key visual
+    if (kEl) {
+      kEl.classList.add('pressed');
+      const t = setTimeout(() => { if(kEl) kEl.classList.remove('pressed'); }, 200);
+      timers.push(t);
+    }
+
+    // Render pixel character
+    const charEl = makePixelChar(letter, color);
+    area.appendChild(charEl);
+    requestAnimationFrame(() => {
+      charEl.style.opacity = '1';
+      charEl.style.transform = 'translateY(0)';
+    });
+
+    i++;
+    // Update type-bar-demo
+    const tbd = document.getElementById('type-bar-demo');
+    if (tbd) tbd.textContent = word.slice(0, i);
+
+    const t2 = setTimeout(typeChar, 500);
+    timers.push(t2);
+  }
+
+  const t0 = setTimeout(typeChar, 700);
+  timers.push(t0);
+
+  return () => {
+    stopped = true;
+    timers.forEach(clearTimeout);
+  };
+}
+function animSlide3() {
+  const cellsContainer = document.getElementById('cells-3');
+  const saveBtn = document.getElementById('save-btn');
+  const flash = document.getElementById('flash-3');
+  const confirm = document.getElementById('save-confirm');
+  const ann = document.getElementById('ann-3');
+  cellsContainer.innerHTML = '';
+  saveBtn.classList.remove('show');
+  saveBtn.classList.remove('click-anim');
+  flash.classList.remove('active');
+  confirm.style.opacity = '0';
+  ann.style.opacity = '0';
+
+  const symbols = ['╋','◆','△','◉','✦','⬢','◐','☼','◇','▤','◈'];
+  const colors = ['#e7cc44','#de544a','#c1dc6e','#5bc6e2','#8d69c6','#e97883','#d39c42','#cc3a28','#8d69c6','#c1dc6e','#e7cc44'];
+
+  let stopped = false;
+  let timers = [];
+
+  // Fill canvas with a completed textile
+  const demo3 = document.getElementById('demo-3');
+  const gridSize = Math.round(parseFloat(getComputedStyle(demo3).getPropertyValue('--cell-sz')) || 24);
+  const cols = Math.floor((demo3.offsetWidth - parseFloat(getComputedStyle(demo3).getPropertyValue('--sidebar-w'))) / gridSize);
+  const rows = Math.floor(demo3.offsetHeight / gridSize);
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (Math.random() < 0.65) {
+        const idx = (r * 3 + c * 7) % symbols.length;
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.style.width = gridSize + 'px';
+        cell.style.height = gridSize + 'px';
+        cell.style.fontSize = Math.round(gridSize * 0.58) + 'px';
+        cell.style.left = (c * gridSize) + 'px';
+        cell.style.top = (r * gridSize) + 'px';
+        cell.style.color = colors[idx];
+        cell.style.background = colors[idx] + '18';
+        cell.textContent = symbols[idx];
+        cellsContainer.appendChild(cell);
+
+        const delay = (r * cols + c) * 8;
+        const t = setTimeout(() => {
+          if (!stopped) cell.classList.add('show');
+        }, delay);
+        timers.push(t);
+      }
+    }
+  }
+
+  // Show button after cells appear
+  const t1 = setTimeout(() => {
+    if (!stopped) {
+      saveBtn.classList.add('show');
+      ann.style.opacity = '1';
+    }
+  }, 1200);
+  timers.push(t1);
+
+  // Simulate click
+  const t2 = setTimeout(() => {
+    if (!stopped) {
+      saveBtn.classList.add('click-anim');
+      const t = setTimeout(() => { if (!stopped && saveBtn) saveBtn.classList.remove('click-anim'); }, 200);
+      timers.push(t);
+    }
+  }, 2200);
+  timers.push(t2);
+
+  // Flash
+  const t3 = setTimeout(() => {
+    if (!stopped) {
+      flash.classList.add('active');
+      const t = setTimeout(() => { if(!stopped) flash.classList.remove('active'); }, 150);
+      timers.push(t);
+    }
+  }, 2400);
+  timers.push(t3);
+
+  // Confirm
+  const t4 = setTimeout(() => {
+    if (!stopped) confirm.style.opacity = '1';
+  }, 2600);
+  timers.push(t4);
+
+  return () => {
+    stopped = true;
+    timers.forEach(clearTimeout);
+  };
+}
+
+// ─── ANIMATION MAP ───────────────────────────────────────────────────
+const animFns = [animSlide0, animSlide1, animSlide2, animSlide3];
+
+function startSlideAnimation(idx) {
+  if (stopperFns[idx]) stopperFns[idx]();
+  stopperFns[idx] = animFns[idx]();
+}
+
+// ─── BOOT ─────────────────────────────────────────────────────────────
+const titleOverlay = document.getElementById('titleOverlay');
+setTimeout(() => {
+  titleOverlay.classList.add('hide');
+  startSlideAnimation(0);
+  slideTimeout = setTimeout(() => goToSlide(1), SLIDE_DURATIONS[0]);
+}, 2000);
+
+</script>
+
+                    </div>
+                    <div class="tutorial-caption">
+                        <span>INTERACTIVE GUIDE</span>
+                        <span class="caption-dot">·</span>
+                        <span>AUTO-PLAYS · 4 STEPS</span>
+                        <span class="caption-dot">·</span>
+                        <span>USE ← → TO NAVIGATE</span>
+                    </div>
+                </div>
+                <div class="instructions-cta">
+                    <button class="cta-button" onclick="switchTab('canvas')">
+                        <span>OPEN CANVAS</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- CANVAS TAB -->
+        <section id="canvas" class="tab-content">
+            <div class="canvas-layout">
+
+                <!-- LEFT CONTROL PANEL -->
+                <aside class="weave-controls" id="weave-controls">
+                    <div class="controls-header">
+                        <span class="controls-sub">CONTROLS</span>
+                    </div>
+
+                    <!-- SYMBOL GRID -->
+                    <div class="ctrl-section">
+                        <div class="ctrl-section-label">SYMBOLS</div>
+                        <div class="ctrl-sym-grid" id="ctrl-sym-grid">
+                            <!-- filled by JS -->
+                        </div>
+                    </div>
+
+                    <!-- STITCH WIDTH — custom drag slider -->
+                    <div class="ctrl-section">
+                        <div class="ctrl-section-label">STITCH</div>
+                        <div class="custom-vslider" id="ctrl-stitch-wrap" title="Drag to change stitch width">
+                            <div class="cvs-track">
+                                <div class="cvs-fill" id="cvs-fill"></div>
+                                <div class="cvs-thumb" id="cvs-thumb"></div>
+                            </div>
+                            <span class="cvs-val" id="ctrl-stitch-val">1.5</span>
+                        </div>
+                    </div>
+
+                    <!-- CONNECTIONS TOGGLE -->
+                    <div class="ctrl-section">
+                        <div class="ctrl-section-label">CONNECTIONS</div>
+                        <button class="ctrl-pill-toggle" id="ctrl-connect" title="Toggle Stitch Lines">
+                            <span class="pill-track">
+                                <span class="pill-thumb"></span>
+                            </span>
+                            <span class="pill-labels">
+                                <span class="pill-label-off">OFF</span>
+                                <span class="pill-label-on">ON</span>
+                            </span>
+                        </button>
+                    </div>
+
+                    <!-- DIVIDER -->
+                    <div class="ctrl-divider"></div>
+
+                    <!-- CLEAR -->
+                    <button class="ctrl-btn ctrl-btn--danger" id="ctrl-clear" title="Clear Canvas">
+                        <span class="ctrl-icon">↻</span>
+                        <span class="ctrl-label">CLEAR</span>
+                    </button>
+
+                    <!-- SAVE PNG -->
+                    <button class="ctrl-btn ctrl-btn--save" id="ctrl-save" title="Save PNG">
+                        <span class="ctrl-icon">↓</span>
+                        <span class="ctrl-label">SAVE PNG</span>
+                    </button>
+
+                    <!-- HELP -->
+                    <button class="ctrl-btn ctrl-btn--help" id="ctrl-help" title="Help">
+                        <span class="ctrl-icon">?</span>
+                        <span class="ctrl-label">HELP</span>
+                    </button>
+
+                </aside>
+
+                <!-- RIGHT COLUMN: type bar + canvas -->
+                <div class="canvas-column">
+
+                    <!-- TYPE BAR -->
+                    <div class="type-bar" id="type-bar" onclick="document.querySelector('#canvas-container canvas')&&document.querySelector('#canvas-container canvas').focus()">
+                        <span class="type-bar-label">TYPE</span>
+                        <div class="type-bar-field">
+                            <span class="type-bar-text" id="type-bar-text"></span><span class="type-bar-cursor" id="type-bar-cursor">_</span>
+                        </div>
+                        <span class="type-bar-hint">CLICK CANVAS FIRST · ENTER TO CLEAR</span>
+                    </div>
+
+                    <!-- CANVAS -->
+                    <div class="canvas-wrapper">
+                        <div id="speed-warning" class="speed-warning">
+                            <span class="speed-warning-icon">◈</span>
+                            slow down &amp; enjoy the weave
+                        </div>
+                        <div id="canvas-container"></div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ARCHIVE TAB -->
+        <section id="archive" class="tab-content">
+            <div class="archive-layout">
+                <div class="archive-header">
+                    <div class="archive-title-group">
+                        <canvas id="archive-woven-title" class="woven-title-canvas archive-woven-canvas"></canvas>
+                        <p class="archive-subtitle">SAVED WEAVINGS</p>
+                    </div>
+                </div>
+                <div class="archive-empty" id="archive-empty">
+                    <div class="archive-empty-icon">◈</div>
+                    <p>NO WEAVINGS SAVED YET</p>
+                    <p class="archive-empty-sub">Click SAVE in the canvas to archive your work here</p>
+                    <button class="cta-button" onclick="switchTab('canvas')" style="margin-top:1.5rem">
+                        <span>GO TO CANVAS</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="archive-grid" id="archive-grid"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ── FULLSCREEN VIEWER MODAL ── -->
+    <div id="viewer-modal" class="viewer-modal" hidden>
+        <div class="viewer-backdrop" onclick="closeViewer()"></div>
+        <div class="viewer-panel">
+            <div class="viewer-topbar">
+                <span class="viewer-label" id="viewer-label"></span>
+                <button class="viewer-close" onclick="closeViewer()">✕</button>
+            </div>
+            <div class="viewer-img-wrap">
+                <img id="viewer-img" src="" alt="Weaving" />
+            </div>
+            <div class="viewer-actions">
+                <button class="viewer-btn" id="viewer-share-btn" onclick="viewerShare()">
+                    <span class="vbtn-icon">⤴</span>
+                    <span id="viewer-share-label">SHARE / AIRDROP</span>
+                </button>
+                <button class="viewer-btn danger" onclick="viewerDelete()">
+                    <span class="vbtn-icon">✕</span>
+                    <span>DELETE</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="main-footer">
+        <div class="footer-content">
+            <p>DAYANA GUERRERO • 2026</p>
+            <p>MADE BY ECUADORIAN HANDS</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <script src="weaving.js"></script>
+    <script src="script.js"></script>
+    <script src="textile-gallery.js"></script>
+
+<script>
+// ── HTML CONTROL PANEL WIRING ────────────────────────────────────────────────
+(function() {
+    const andeanSymbols = [
+        '╋','◆','∧','∨','▬','△','◉','▩','◇','▤','◈','▣','▦','◊',
+        '✦','⬟','◐','◑','☼','✧','▽','◭','⬢','⬡','◮','◯','⬣','⬤'
+    ];
+    const andeanColors = [
+        '#e7cc44','#cc3a28','#8d69c6','#581e38',
+        '#c1dc6e','#e97883','#809843','#5bc6e2',
+        '#7d3728','#de544a','#d39c42','#212389'
+    ];
+
+    function getSketch() { return window.p5Instance; }
+
+    let panelInitialized = false;
+
+    function initPanel() {
+        // Build symbol grid (only once)
+        const symGrid = document.getElementById('ctrl-sym-grid');
+        if (symGrid && symGrid.children.length === 0) {
+            andeanSymbols.forEach((sym, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'sym-cell' + (i === 0 ? ' active' : '');
+                btn.textContent = sym;
+                btn.title = sym;
+                btn.style.color = andeanColors[i % andeanColors.length];
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.sym-cell').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    // Update the SYMBOLS button icon too
+                    const iconEl = document.getElementById('ctrl-icon-sym');
+                    if (iconEl) iconEl.textContent = sym;
+                    // Tell p5 sketch to switch symbol
+                    const sk = getSketch();
+                    if (sk && sk.setSymbol) sk.setSymbol(i);
+                });
+                symGrid.appendChild(btn);
+            });
+        }
+
+        if (panelInitialized) return;
+        panelInitialized = true;
+
+        // Help button
+        const helpBtn = document.getElementById('ctrl-help');
+        if (helpBtn) helpBtn.addEventListener('click', () => {
+            const sk = getSketch();
+            if (sk && sk.actionHelp) sk.actionHelp();
+        });
+
+        // Clear button
+        const clearBtn = document.getElementById('ctrl-clear');
+        if (clearBtn) clearBtn.addEventListener('click', () => {
+            const sk = getSketch();
+            if (sk && sk.actionClear) sk.actionClear();
+            clearBtn.style.transform = 'scale(0.9) rotate(-12deg)';
+            setTimeout(() => { clearBtn.style.transform = ''; }, 300);
+        });
+
+        // Save button
+        const saveBtn = document.getElementById('ctrl-save');
+        if (saveBtn) saveBtn.addEventListener('click', () => {
+            const sk = getSketch();
+            if (sk && sk.actionSave) sk.actionSave();
+            saveBtn.style.transform = 'translateY(-2px) scale(1.06)';
+            const lbl = saveBtn.querySelector('.ctrl-label');
+            if (lbl) lbl.textContent = 'SAVED ✓';
+            setTimeout(() => {
+                saveBtn.style.transform = '';
+                if (lbl) lbl.textContent = 'SAVE PNG';
+            }, 1400);
+        });
+
+        // Connections toggle — pill switch
+        const connBtn = document.getElementById('ctrl-connect');
+        let connOn = true;
+        if (connBtn) {
+            connBtn.classList.add('on'); // default on
+            connBtn.addEventListener('click', () => {
+                const sk = getSketch();
+                if (sk && sk.actionConnect) {
+                    connOn = sk.actionConnect();
+                } else {
+                    connOn = !connOn;
+                }
+                connBtn.classList.toggle('on', connOn);
+                connBtn.classList.toggle('off', !connOn);
+            });
+        }
+
+        // ── Custom vertical stitch slider ──────────────────────────────────
+        (function() {
+            const wrap  = document.getElementById('ctrl-stitch-wrap');
+            const fill  = document.getElementById('cvs-fill');
+            const thumb = document.getElementById('cvs-thumb');
+            const valEl = document.getElementById('ctrl-stitch-val');
+            if (!wrap || !fill || !thumb || !valEl) return;
+
+            const MIN = 0.5, MAX = 5.0;
+            let currentVal = 1.5;
+            let dragging = false;
+
+            function norm(v) { return (v - MIN) / (MAX - MIN); }
+            function fromNorm(n) { return MIN + n * (MAX - MIN); }
+
+            function render(v) {
+                const n = norm(v);
+                const trackH = wrap.querySelector('.cvs-track').offsetHeight;
+                // 0 = bottom, 1 = top  (invert so drag up = bigger)
+                const pct = (1 - n) * 100;
+                fill.style.height  = (n * 100) + '%';
+                thumb.style.bottom = (n * (trackH - 14)) + 'px';
+                valEl.textContent  = v.toFixed(1);
+            }
+
+            function applyVal(v) {
+                currentVal = Math.min(MAX, Math.max(MIN, v));
+                render(currentVal);
+                const sk = window.p5Instance;
+                if (sk && sk.setStitch) sk.setStitch(currentVal);
+            }
+
+            function posToVal(clientY) {
+                const track = wrap.querySelector('.cvs-track');
+                const rect  = track.getBoundingClientRect();
+                // dragging up → higher value
+                const n = 1 - Math.min(1, Math.max(0, (clientY - rect.top) / rect.height));
+                return fromNorm(n);
+            }
+
+            thumb.addEventListener('mousedown', (e) => { dragging = true; e.preventDefault(); });
+            wrap.addEventListener('mousedown',  (e) => {
+                dragging = true;
+                applyVal(posToVal(e.clientY));
+                e.preventDefault();
+            });
+            window.addEventListener('mousemove', (e) => {
+                if (!dragging) return;
+                applyVal(posToVal(e.clientY));
+            });
+            window.addEventListener('mouseup', () => { dragging = false; });
+
+            // touch
+            wrap.addEventListener('touchstart', (e) => {
+                dragging = true;
+                applyVal(posToVal(e.touches[0].clientY));
+                e.preventDefault();
+            }, { passive: false });
+            window.addEventListener('touchmove', (e) => {
+                if (!dragging) return;
+                applyVal(posToVal(e.touches[0].clientY));
+            });
+            window.addEventListener('touchend', () => { dragging = false; });
+
+            // initial render
+            render(currentVal);
+        })();
+    }
+
+    // Re-init panel every time canvas tab is activated
+    const origSwitchTab = window.switchTab;
+    window.switchTab = function(tabName, highlightId) {
+        origSwitchTab && origSwitchTab(tabName, highlightId);
+        if (tabName === 'canvas') {
+            setTimeout(initPanel, 200);
+        }
+    };
+
+    // Also init if page loads on canvas tab
+    document.addEventListener('DOMContentLoaded', () => {
+        const canvasTab = document.querySelector('[data-tab="canvas"]');
+        if (canvasTab && canvasTab.classList.contains('active')) {
+            setTimeout(initPanel, 500);
+        }
+    });
+})();
+</script>
+
+<script>
+// ── ARCHIVE + VIEWER SYSTEM ─────────────────────────────────────────────────
+
+// ── Storage ──────────────────────────────────────────────────────────────────
+function getArchive() {
+    try { return JSON.parse(localStorage.getItem('andean_archive') || '[]'); }
+    catch(e) { return []; }
+}
+
+function updateArchiveCount() {
+    const count = getArchive().length;
+    const badge = document.getElementById('archive-count');
+    if (!badge) return;
+    badge.textContent = count > 0 ? count : '';
+    badge.classList.toggle('visible', count > 0);
+}
+
+// ── Render grid ──────────────────────────────────────────────────────────────
+function renderArchive(highlightId) {
+    const saved = getArchive();
+    const grid  = document.getElementById('archive-grid');
+    const empty = document.getElementById('archive-empty');
+    if (!grid || !empty) return;
+
+    if (saved.length === 0) {
+        empty.removeAttribute('hidden');
+        grid.innerHTML = '';
+        updateArchiveCount();
+        return;
+    }
+
+    empty.setAttribute('hidden', '');
+    grid.innerHTML = '';
+
+    saved.forEach(entry => {
+        const item = document.createElement('div');
+        item.className = 'archive-item' + (entry.id === highlightId ? ' new' : '');
+        item.dataset.id = entry.id;
+
+        const img = document.createElement('img');
+        img.src = entry.dataURL;
+        img.alt = entry.label;
+        img.loading = 'lazy';
+
+        const footer = document.createElement('div');
+        footer.className = 'archive-item-footer';
+
+        const label = document.createElement('span');
+        label.className = 'archive-item-label';
+        label.textContent = entry.label;
+
+        const actions = document.createElement('div');
+        actions.className = 'archive-item-actions';
+
+        // Expand button → opens viewer
+        const expandBtn = document.createElement('button');
+        expandBtn.className = 'archive-btn expand';
+        expandBtn.title = 'View fullscreen';
+        expandBtn.textContent = '⛶';
+        expandBtn.onclick = (e) => { e.stopPropagation(); openViewer(entry.id); };
+
+        // Delete button
+        const delBtn = document.createElement('button');
+        delBtn.className = 'archive-btn delete';
+        delBtn.title = 'Delete';
+        delBtn.textContent = '✕';
+        delBtn.onclick = (e) => { e.stopPropagation(); deleteArchiveEntry(entry.id); };
+
+        actions.appendChild(expandBtn);
+        actions.appendChild(delBtn);
+        footer.appendChild(label);
+        footer.appendChild(actions);
+        item.appendChild(img);
+        item.appendChild(footer);
+
+        // Click card body → open viewer
+        img.addEventListener('click', () => openViewer(entry.id));
+
+        grid.appendChild(item);
+    });
+
+    updateArchiveCount();
+}
+
+function deleteArchiveEntry(id) {
+    // If viewer is open on this item, close it
+    if (window._viewerCurrentId === id) closeViewer();
+    const saved = getArchive().filter(e => e.id !== id);
+    localStorage.setItem('andean_archive', JSON.stringify(saved));
+    renderArchive();
+}
+
+// ── FULLSCREEN VIEWER ────────────────────────────────────────────────────────
+window._viewerCurrentId = null;
+
+function openViewer(id) {
+    const entry = getArchive().find(e => e.id === id);
+    if (!entry) return;
+    window._viewerCurrentId = id;
+
+    document.getElementById('viewer-img').src = entry.dataURL;
+    document.getElementById('viewer-label').textContent = entry.label;
+
+    const modal = document.getElementById('viewer-modal');
+    modal.hidden = false;
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+
+    // Keyboard close
+    document._viewerKeyHandler = (e) => { if (e.key === 'Escape') closeViewer(); };
+    document.addEventListener('keydown', document._viewerKeyHandler);
+}
+
+function closeViewer() {
+    const modal = document.getElementById('viewer-modal');
+    modal.classList.remove('open');
+    modal.hidden = true;
+    document.body.style.overflow = '';
+    window._viewerCurrentId = null;
+    if (document._viewerKeyHandler) {
+        document.removeEventListener('keydown', document._viewerKeyHandler);
+    }
+}
+
+function viewerDelete() {
+    if (!window._viewerCurrentId) return;
+    if (!confirm('Delete this weaving?')) return;
+    deleteArchiveEntry(window._viewerCurrentId);
+}
+
+// ── SHARE / AIRDROP ──────────────────────────────────────────────────────────
+async function viewerShare() {
+    const entry = getArchive().find(e => e.id === window._viewerCurrentId);
+    if (!entry) return;
+
+    const btn = document.getElementById('viewer-share-btn');
+    const lbl = document.getElementById('viewer-share-label');
+
+    // Convert base64 dataURL → Blob → File
+    const res  = await fetch(entry.dataURL);
+    const blob = await res.blob();
+    const file = new File([blob], `andean_weave_${entry.id}.png`, { type: 'image/png' });
+
+    // Try Web Share API (works on iOS Safari, Android Chrome, macOS Safari 15+)
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+            await navigator.share({
+                title: 'Digital Andes Weaving',
+                text: `My Andean textile — ${entry.label}`,
+                files: [file]
+            });
+            lbl.textContent = 'SHARED ✓';
+            setTimeout(() => { lbl.textContent = 'SHARE / AIRDROP'; }, 2500);
+        } catch(err) {
+            if (err.name !== 'AbortError') {
+                lbl.textContent = 'SHARE FAILED';
+                setTimeout(() => { lbl.textContent = 'SHARE / AIRDROP'; }, 2000);
+            }
+        }
+    } else if (navigator.share) {
+        // Fallback: share URL only (no file)
+        try {
+            await navigator.share({ title: 'Digital Andes Weaving', text: `My Andean textile — ${entry.label}` });
+        } catch(e) {}
+    } else {
+        // Desktop fallback: copy dataURL to clipboard and notify
+        try {
+            await navigator.clipboard.writeText(entry.dataURL);
+            lbl.textContent = 'DATA URL COPIED ✓';
+            setTimeout(() => { lbl.textContent = 'SHARE / AIRDROP'; }, 2500);
+        } catch(e) {
+            lbl.textContent = 'NOT SUPPORTED';
+            setTimeout(() => { lbl.textContent = 'SHARE / AIRDROP'; }, 2000);
+        }
+    }
+}
+
+// ── Auto-open viewer if URL contains ?weave=ID ───────────────────────────────
+(function() {
+    const params = new URLSearchParams(location.search);
+    const weaveId = parseInt(params.get('weave'));
+    if (weaveId) {
+        document.addEventListener('DOMContentLoaded', () => {
+            // Switch to archive tab then open viewer
+            setTimeout(() => {
+                if (window.switchTab) window.switchTab('archive');
+                setTimeout(() => openViewer(weaveId), 300);
+            }, 500);
+        });
+    }
+})();
+
+// ── Tab hook ─────────────────────────────────────────────────────────────────
+const _origSwitchTab = window.switchTab;
+window.switchTab = function(tabName, highlightId) {
+    _origSwitchTab(tabName);
+    if (tabName === 'archive') renderArchive(highlightId);
+};
+
+window.onWeavingSaved = function(id) {
+    window.switchTab('archive', id);
+};
+
+document.addEventListener('DOMContentLoaded', updateArchiveCount);
+</script>
+
+<script>
+// ── TUTORIAL EMBED JS ──
+(function() {
+
+// ─── PIXEL FONT (5x7) ───────────────────────────────────────────────
+const PIXELS = {
+  A: [[0,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1]],
+  N: [[1,0,0,0,1],[1,1,0,0,1],[1,0,1,0,1],[1,0,0,1,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1]],
+  D: [[1,1,1,0,0],[1,0,0,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,1,0],[1,1,1,0,0]],
+  E: [[1,1,1,1,1],[1,0,0,0,0],[1,0,0,0,0],[1,1,1,1,0],[1,0,0,0,0],[1,0,0,0,0],[1,1,1,1,1]],
+};
+
+function makePixelChar(letter, color) {
+  const rows = PIXELS[letter] || PIXELS['A'];
+  const wrap = document.createElement('div');
+  wrap.style.display = 'flex';
+  wrap.style.flexDirection = 'column';
+  wrap.style.gap = '2px';
+  wrap.style.opacity = '0';
+  wrap.style.transform = 'translateY(12px)';
+  wrap.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+  rows.forEach(row => {
+    const rowEl = document.createElement('div');
+    rowEl.style.display = 'flex';
+    rowEl.style.gap = '2px';
+    row.forEach(on => {
+      const px = document.createElement('div');
+      px.style.width = '8px';
+      px.style.height = '8px';
+      px.style.borderRadius = '1px';
+      px.style.background = on ? color : 'transparent';
+      rowEl.appendChild(px);
+    });
+    wrap.appendChild(rowEl);
+  });
+  return wrap;
+}
+
+// ─── SLIDE MANAGEMENT ───────────────────────────────────────────────
+const slides = document.querySelectorAll('.slide');
+const progDots = document.querySelectorAll('.prog-dot');
+let currentSlide = 0;
+let slideTimeout = null;
+const SLIDE_DURATIONS = [5200, 5500, 6000, 5500];
+let stopperFns = [];
+
+function goToSlide(idx) {
+  if (slideTimeout) clearTimeout(slideTimeout);
+  if (stopperFns[currentSlide]) stopperFns[currentSlide]();
+
+  slides[currentSlide].classList.remove('active');
+  progDots[currentSlide].classList.remove('active');
+
+  currentSlide = (idx + slides.length) % slides.length;
+
+  slides[currentSlide].classList.add('active');
+  progDots[currentSlide].classList.add('active');
+
+  startSlideAnimation(currentSlide);
+  slideTimeout = setTimeout(() => goToSlide(currentSlide + 1), SLIDE_DURATIONS[currentSlide]);
+}
+
+document.getElementById('nextBtn').onclick = () => goToSlide(currentSlide + 1);
+document.getElementById('prevBtn').onclick = () => goToSlide(currentSlide - 1);
+
+// ─── SLIDE 0 ANIMATION: Click & Drag ─────────────────────────────────
+function animSlide0() {
+  const cursor = document.getElementById('cursor-0');
+  const cellsContainer = document.getElementById('cells-0');
+  const trailContainer = document.getElementById('trail-0');
+  const ann = document.getElementById('ann-0');
+  cellsContainer.innerHTML = '';
+  trailContainer.innerHTML = '';
+  ann.classList.remove('show');
+
+  const symbols = ['╋','◆','△','◉','✦','◇','▬'];
+  const colors = ['#e7cc44','#de544a','#c1dc6e','#5bc6e2','#8d69c6','#e97883','#d39c42'];
+
+  // Drag path: series of grid positions
+  const gridSize = 28;
+  const paths = [
+    // Horizontal sweep
+    {col:2, row:3},{col:3,row:3},{col:4,row:3},{col:5,row:3},{col:6,row:3},
+    {col:7,row:3},{col:8,row:3},{col:9,row:3},{col:10,row:3},
+    // Go down
+    {col:10,row:4},{col:10,row:5},{col:10,row:6},
+    // Horizontal back
+    {col:9,row:6},{col:8,row:6},{col:7,row:6},{col:6,row:6},{col:5,row:6},
+    // Another row
+    {col:3,row:8},{col:4,row:8},{col:5,row:8},{col:6,row:8},{col:7,row:8},{col:8,row:8},
+    // Diagonal-ish
+    {col:4,row:10},{col:5,row:10},{col:6,row:10},{col:7,row:10},{col:8,row:10},{col:9,row:10},{col:10,row:10},{col:11,row:10},
+  ];
+
+  let t0, rafId, i = 0, stopped = false;
+  const msPerCell = 130;
+
+  function placeCells() {
+    if (stopped) return;
+    if (i >= paths.length) {
+      cursor.classList.remove('dragging');
+      setTimeout(() => {
+        if (!stopped) ann.classList.add('show');
+      }, 300);
+      return;
+    }
+
+    const {col, row} = paths[i];
+    const x = 20 + col * gridSize;
+    const y = 20 + row * gridSize;
+
+    cursor.style.left = (x - 10) + 'px';
+    cursor.style.top = (y - 10) + 'px';
+    cursor.classList.add('dragging');
+
+    // Place trail dot
+    const td = document.createElement('div');
+    td.className = 'trail-dot';
+    td.style.left = x + 'px';
+    td.style.top = y + 'px';
+    trailContainer.appendChild(td);
+    requestAnimationFrame(() => td.classList.add('show'));
+
+    // Place cell
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    const ci = i % colors.length;
+    cell.style.left = (20 + col * gridSize) + 'px';
+    cell.style.top = (20 + row * gridSize) + 'px';
+    cell.style.background = colors[ci] + '22';
+    cell.style.color = colors[ci];
+    cell.textContent = symbols[ci % symbols.length];
+    cellsContainer.appendChild(cell);
+    requestAnimationFrame(() => cell.classList.add('show'));
+
+    i++;
+    rafId = setTimeout(placeCells, msPerCell);
+  }
+
+  // Start after short delay
+  const startTimer = setTimeout(() => {
+    cursor.style.left = (20 + paths[0].col * 28 - 10) + 'px';
+    cursor.style.top = (20 + paths[0].row * 28 - 10) + 'px';
+    placeCells();
+  }, 600);
+
+  return () => {
+    stopped = true;
+    clearTimeout(startTimer);
+    clearTimeout(rafId);
+    cursor.classList.remove('dragging');
+  };
+}
+
+// ─── SLIDE 1 ANIMATION: Choose Symbol ────────────────────────────────
+function animSlide1() {
+  const cursor = document.getElementById('cursor-1');
+  const sbBtns = [0,1,2,3,4,5,6,7].map(i => document.getElementById('sb-'+i));
+  const ann = document.getElementById('ann-1');
+  const showcase = document.getElementById('sym-showcase');
+  showcase.innerHTML = '';
+  ann.style.opacity = '0';
+
+  const symbols = ['╋','◆','△','◉','✦','⬢','◐','☼'];
+  const colors = ['#e7cc44','#de544a','#c1dc6e','#5bc6e2','#8d69c6','#e97883','#d39c42','#cc3a28'];
+
+  let stopped = false;
+  let timers = [];
+
+  function selectSymbol(idx) {
+    sbBtns.forEach(b => b.classList.remove('active-sym'));
+    if (sbBtns[idx]) {
+      sbBtns[idx].classList.add('active-sym');
+      sbBtns[idx].style.color = colors[idx];
+      sbBtns[idx].style.borderColor = colors[idx];
+      sbBtns[idx].style.background = colors[idx] + '22';
+      sbBtns[idx].style.boxShadow = `0 0 8px ${colors[idx]}55`;
+    }
+
+    // Move cursor to that button position
+    const right = 48;
+    const top = 16 + idx * 42;
+    const demoW = document.getElementById('demo-1').offsetWidth;
+    cursor.style.left = (demoW - right - 50) + 'px';
+    cursor.style.top = top + 'px';
+
+    // Add symbol to showcase
+    const row = Math.floor(idx / 4);
+    if (!showcase.children[row]) {
+      const r = document.createElement('div');
+      r.style.display = 'flex';
+      r.style.gap = '12px';
+      showcase.appendChild(r);
+    }
+    const span = document.createElement('span');
+    span.textContent = symbols[idx];
+    span.style.fontSize = '28px';
+    span.style.color = colors[idx];
+    span.style.opacity = '0';
+    span.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+    span.style.transform = 'scale(0.5)';
+    showcase.children[row].appendChild(span);
+    requestAnimationFrame(() => {
+      span.style.opacity = '1';
+      span.style.transform = 'scale(1)';
+    });
+  }
+
+  let i = 0;
+  function cycle() {
+    if (stopped) return;
+    selectSymbol(i % symbols.length);
+    i++;
+    const t = setTimeout(cycle, 600);
+    timers.push(t);
+  }
+
+  const t0 = setTimeout(() => {
+    cycle();
+    const ta = setTimeout(() => {
+      if (!stopped) ann.style.opacity = '1';
+    }, 2000);
+    timers.push(ta);
+  }, 400);
+  timers.push(t0);
+
+  return () => {
+    stopped = true;
+    timers.forEach(clearTimeout);
+  };
+}
+
+// ─── SLIDE 2 ANIMATION: Type Words ───────────────────────────────────
+function animSlide2() {
+  const area = document.getElementById('pixel-word-area');
+  const ann = document.getElementById('ann-2');
+  area.innerHTML = '';
+  ann.classList.remove('show');
+
+  const word = 'ANDEAN';
+  const colors = ['#e7cc44','#de544a','#c1dc6e','#5bc6e2','#8d69c6','#e97883'];
+  const kIds = ['k-A','k-N','k-D','k-E','k-A2','k-N2'];
+
+  let stopped = false;
+  let timers = [];
+  let i = 0;
+
+  function typeChar() {
+    if (stopped || i >= word.length) {
+      if (!stopped) {
+        const t = setTimeout(() => { if(!stopped) ann.classList.add('show'); }, 200);
+        timers.push(t);
+      }
+      return;
+    }
+
+    const letter = word[i];
+    const color = colors[i];
+    const kEl = document.getElementById(kIds[i]);
+
+    // Press key visual
+    if (kEl) {
+      kEl.classList.add('pressed');
+      const t = setTimeout(() => { if(kEl) kEl.classList.remove('pressed'); }, 200);
+      timers.push(t);
+    }
+
+    // Render pixel character
+    const charEl = makePixelChar(letter, color);
+    area.appendChild(charEl);
+    requestAnimationFrame(() => {
+      charEl.style.opacity = '1';
+      charEl.style.transform = 'translateY(0)';
+    });
+
+    i++;
+    const t2 = setTimeout(typeChar, 500);
+    timers.push(t2);
+  }
+
+  const t0 = setTimeout(typeChar, 700);
+  timers.push(t0);
+
+  return () => {
+    stopped = true;
+    timers.forEach(clearTimeout);
+  };
+}
+
+// ─── SLIDE 3 ANIMATION: Save PNG ─────────────────────────────────────
+function animSlide3() {
+  const cellsContainer = document.getElementById('cells-3');
+  const saveBtn = document.getElementById('save-btn');
+  const flash = document.getElementById('flash-3');
+  const confirm = document.getElementById('save-confirm');
+  const ann = document.getElementById('ann-3');
+  cellsContainer.innerHTML = '';
+  saveBtn.classList.remove('show');
+  saveBtn.classList.remove('click-anim');
+  flash.classList.remove('active');
+  confirm.style.opacity = '0';
+  ann.style.opacity = '0';
+
+  const symbols = ['╋','◆','△','◉','✦','⬢','◐','☼','◇','▤','◈'];
+  const colors = ['#e7cc44','#de544a','#c1dc6e','#5bc6e2','#8d69c6','#e97883','#d39c42','#cc3a28','#8d69c6','#c1dc6e','#e7cc44'];
+
+  let stopped = false;
+  let timers = [];
+
+  // Fill canvas with a completed textile
+  const gridSize = 24;
+  const cols = Math.floor((680 - 48) / gridSize);
+  const rows = Math.floor(540 / gridSize);
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (Math.random() < 0.65) {
+        const idx = (r * 3 + c * 7) % symbols.length;
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.style.width = gridSize + 'px';
+        cell.style.height = gridSize + 'px';
+        cell.style.fontSize = '13px';
+        cell.style.left = (c * gridSize) + 'px';
+        cell.style.top = (r * gridSize) + 'px';
+        cell.style.color = colors[idx];
+        cell.style.background = colors[idx] + '18';
+        cell.textContent = symbols[idx];
+        cellsContainer.appendChild(cell);
+
+        const delay = (r * cols + c) * 8;
+        const t = setTimeout(() => {
+          if (!stopped) cell.classList.add('show');
+        }, delay);
+        timers.push(t);
+      }
+    }
+  }
+
+  // Show button after cells appear
+  const t1 = setTimeout(() => {
+    if (!stopped) {
+      saveBtn.classList.add('show');
+      ann.style.opacity = '1';
+    }
+  }, 1200);
+  timers.push(t1);
+
+  // Simulate click
+  const t2 = setTimeout(() => {
+    if (!stopped) {
+      saveBtn.classList.add('click-anim');
+      const t = setTimeout(() => { if (!stopped && saveBtn) saveBtn.classList.remove('click-anim'); }, 200);
+      timers.push(t);
+    }
+  }, 2200);
+  timers.push(t2);
+
+  // Flash
+  const t3 = setTimeout(() => {
+    if (!stopped) {
+      flash.classList.add('active');
+      const t = setTimeout(() => { if(!stopped) flash.classList.remove('active'); }, 150);
+      timers.push(t);
+    }
+  }, 2400);
+  timers.push(t3);
+
+  // Confirm
+  const t4 = setTimeout(() => {
+    if (!stopped) confirm.style.opacity = '1';
+  }, 2600);
+  timers.push(t4);
+
+  return () => {
+    stopped = true;
+    timers.forEach(clearTimeout);
+  };
+}
+
+// ─── ANIMATION MAP ───────────────────────────────────────────────────
+const animFns = [animSlide0, animSlide1, animSlide2, animSlide3];
+
+function startSlideAnimation(idx) {
+  if (stopperFns[idx]) stopperFns[idx]();
+  stopperFns[idx] = animFns[idx]();
+}
+
+// ─── BOOT ─────────────────────────────────────────────────────────────
+const titleOverlay = document.getElementById('titleOverlay');
+setTimeout(() => {
+  titleOverlay.classList.add('hide');
+  startSlideAnimation(0);
+  slideTimeout = setTimeout(() => goToSlide(1), SLIDE_DURATIONS[0]);
+}, 2000);
+
+
+})();
+</script>
+
+<script>
+/* ── WOVEN TITLE — "DIGITAL / ANDES" as animated weaving symbols ── */
+(function () {
+
+  // 5×7 bitmapped pixel font
+  const FONT = {
+    A:[[0,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1]],
+    B:[[1,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,0]],
+    C:[[0,1,1,1,1],[1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0],[0,1,1,1,1]],
+    D:[[1,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,0]],
+    E:[[1,1,1,1,1],[1,0,0,0,0],[1,0,0,0,0],[1,1,1,1,0],[1,0,0,0,0],[1,0,0,0,0],[1,1,1,1,1]],
+    G:[[0,1,1,1,1],[1,0,0,0,0],[1,0,0,0,0],[1,0,1,1,1],[1,0,0,0,1],[1,0,0,0,1],[0,1,1,1,1]],
+    I:[[1,1,1,1,1],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[1,1,1,1,1]],
+    L:[[1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0],[1,1,1,1,1]],
+    N:[[1,0,0,0,1],[1,1,0,0,1],[1,0,1,0,1],[1,0,0,1,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1]],
+    S:[[0,1,1,1,1],[1,0,0,0,0],[1,0,0,0,0],[0,1,1,1,0],[0,0,0,0,1],[0,0,0,0,1],[1,1,1,1,0]],
+    T:[[1,1,1,1,1],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0]],
+  };
+
+  const WORDS   = ['DIGITAL', 'ANDES'];
+  const PALETTE = [
+    [231,204,68],  // amber
+    [222,84,74],   // coral
+    [91,198,226],  // cyan
+    [193,220,110], // lime
+    [141,105,198], // purple
+    [233,120,131], // pink
+    [211,156,66],  // gold
+    [88,170,200],  // sky
+  ];
+  const SYMBOLS = ['◆','╋','▩','◉','◈','▣','✦','∧','⬟','◐'];
+
+  const CELL = 11;   // px per dot — drives apparent size
+  const LGAP = 4;    // extra px between letters
+  const WGAP = 18;   // gap between DIGITAL and ANDES rows
+
+  // Build flat list of drawable cells
+  function buildCells() {
+    const cells = [];
+    WORDS.forEach((word, wi) => {
+      let cx = 0;
+      for (let li = 0; li < word.length; li++) {
+        const pat = FONT[word[li]];
+        if (!pat) { cx += (5 + LGAP) * CELL; continue; }
+        for (let row = 0; row < 7; row++) {
+          for (let col = 0; col < 5; col++) {
+            if (!pat[row][col]) continue;
+            const ci = (li * 3 + row + col * 2 + wi * 4) % PALETTE.length;
+            cells.push({
+              x: cx + col * CELL,
+              y: wi * (7 * CELL + WGAP) + row * CELL,
+              ci,
+              phase: li * 0.55 + row * 0.28 + col * 0.18 + wi * 1.4,
+              symOffset: (li * 7 + row * 3 + col) % SYMBOLS.length,
+            });
+          }
+        }
+        cx += (5 + LGAP) * CELL;
+      }
+    });
+    return cells;
+  }
+
+  function maxWidth() {
+    return Math.max(...WORDS.map(w => w.length * (5 + LGAP) * CELL - LGAP * CELL));
+  }
+  function totalHeight() {
+    return WORDS.length * 7 * CELL + (WORDS.length - 1) * WGAP;
+  }
+
+  const cv = document.getElementById('woven-title-canvas');
+  if (!cv) return;
+
+  const W = maxWidth(), H = totalHeight();
+  cv.width  = W;
+  cv.height = H;
+
+  const ctx   = cv.getContext('2d');
+  const cells = buildCells();
+  let t = 0, symTick = 0, lastTick = 0, lastFrame = 0;
+  const TARGET_MS = 1000 / 24; // ~24fps
+
+  function draw(now) {
+    requestAnimationFrame(draw);
+    if (now - lastFrame < TARGET_MS) return;
+    lastFrame = now;
+
+    t += 0.04;
+    ctx.clearRect(0, 0, W, H);
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = `${CELL * 1.2}px "Space Mono", monospace`;
+
+    if (t - lastTick > 0.28) { symTick++; lastTick = t; }
+
+    cells.forEach(c => {
+      const [r, g, b] = PALETTE[c.ci];
+      const breath = Math.sin(t * 1.6 + c.phase) * 0.15 + 0.85;
+      const bob    = Math.sin(t * 2.0 + c.phase * 0.8) * 1.2;
+      const alpha  = Math.min(1, Math.max(0.45, breath));
+      const sym    = SYMBOLS[(c.symOffset + symTick) % SYMBOLS.length];
+
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle   = `rgb(${r},${g},${b})`;
+      ctx.fillText(sym, c.x + CELL / 2, c.y + CELL / 2 + bob);
+    });
+
+    ctx.globalAlpha = 1;
+  }
+
+  // Wait for fonts then start
+  // Pause when tab is hidden
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) requestAnimationFrame(draw); });
+  document.fonts.ready.then(() => requestAnimationFrame(draw));
+})();
+</script>
+<script>
+/* ── ARCHIVE WOVEN TITLE — "ARCHIVE" as animated weaving symbols ── */
+(function () {
+  const FONT = {
+    A:[[0,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1]],
+    B:[[1,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,0]],
+    C:[[0,1,1,1,1],[1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0],[0,1,1,1,1]],
+    E:[[1,1,1,1,1],[1,0,0,0,0],[1,0,0,0,0],[1,1,1,1,0],[1,0,0,0,0],[1,0,0,0,0],[1,1,1,1,1]],
+    H:[[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1]],
+    I:[[1,1,1,1,1],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[1,1,1,1,1]],
+    R:[[1,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,0],[1,0,1,0,0],[1,0,0,1,0],[1,0,0,0,1]],
+    V:[[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[0,1,0,1,0],[0,1,0,1,0],[0,0,1,0,0]],
+  };
+
+  const WORD    = 'ARCHIVE';
+  const PALETTE = [
+    [141,105,198], // purple — dominant (matches old .archive-title color)
+    [233,120,131], // pink
+    [231,204,68],  // amber
+    [91,198,226],  // cyan
+    [193,220,110], // lime
+    [222,84,74],   // coral
+    [211,156,66],  // gold
+    [88,170,200],  // sky
+  ];
+  const SYMBOLS = ['◆','╋','▩','◉','◈','▣','✦','∧','⬟','◐'];
+
+  const CELL = 11;
+  const LGAP = 4;
+
+  function buildCells() {
+    const cells = [];
+    let cx = 0;
+    for (let li = 0; li < WORD.length; li++) {
+      const pat = FONT[WORD[li]];
+      if (!pat) { cx += (5 + LGAP) * CELL; continue; }
+      for (let row = 0; row < 7; row++) {
+        for (let col = 0; col < 5; col++) {
+          if (!pat[row][col]) continue;
+          const ci = (li * 3 + row + col * 2) % PALETTE.length;
+          cells.push({
+            x: cx + col * CELL,
+            y: row * CELL,
+            ci,
+            phase: li * 0.55 + row * 0.28 + col * 0.18,
+            symOffset: (li * 7 + row * 3 + col) % SYMBOLS.length,
+          });
+        }
+      }
+      cx += (5 + LGAP) * CELL;
+    }
+    return cells;
+  }
+
+  const W = WORD.length * (5 + LGAP) * CELL - LGAP * CELL;
+  const H = 7 * CELL;
+
+  const cv = document.getElementById('archive-woven-title');
+  if (!cv) return;
+  cv.width  = W;
+  cv.height = H;
+
+  const ctx   = cv.getContext('2d');
+  const cells = buildCells();
+  let t = 0, symTick = 0, lastTick = 0, lastFrame = 0;
+  const TARGET_MS = 1000 / 24;
+
+  function draw(now) {
+    requestAnimationFrame(draw);
+    if (now - lastFrame < TARGET_MS) return;
+    lastFrame = now;
+
+    t += 0.04;
+    ctx.clearRect(0, 0, W, H);
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = `${CELL * 1.2}px "Space Mono", monospace`;
+
+    if (t - lastTick > 0.28) { symTick++; lastTick = t; }
+
+    cells.forEach(c => {
+      const [r, g, b] = PALETTE[c.ci];
+      const breath = Math.sin(t * 1.6 + c.phase) * 0.15 + 0.85;
+      const bob    = Math.sin(t * 2.0 + c.phase * 0.8) * 1.2;
+      const alpha  = Math.min(1, Math.max(0.45, breath));
+      const sym    = SYMBOLS[(c.symOffset + symTick) % SYMBOLS.length];
+
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle   = `rgb(${r},${g},${b})`;
+      ctx.fillText(sym, c.x + CELL / 2, c.y + CELL / 2 + bob);
+    });
+
+    ctx.globalAlpha = 1;
+  }
+
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) requestAnimationFrame(draw); });
+  document.fonts.ready.then(() => requestAnimationFrame(draw));
+})();
+</script>
+</body>
+</html>
