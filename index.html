@@ -5,14 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DIGITAL ANDES • Dayana 2026</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Remove hover effects on home gallery images */
+        .textile-item,
+        .textile-item img,
+        .textile-item.photo,
+        .textile-item.photo img,
+        .textile-item.canvas {
+            transition: none !important;
+            transform: none !important;
+        }
+        .textile-item:hover,
+        .textile-item img:hover,
+        .textile-item.photo:hover,
+        .textile-item.photo:hover img,
+        .textile-item.canvas:hover {
+            transform: none !important;
+            filter: none !important;
+            box-shadow: none !important;
+            opacity: 1 !important;
+            scale: 1 !important;
+        }
+        .home-gallery .textile-item:hover,
+        .home-gallery .textile-item:hover img {
+            transform: none !important;
+            filter: none !important;
+            box-shadow: none !important;
+        }
+    </style>
 
 <style id="tutorial-styles">
 
-/* ── Tutorial embed — fully fluid for 27" 5K (DPR=2 → ~1280 CSS px wide)
-   All sizes use clamp(min, preferred-vw/vh, max).
-   Calibrated to 1280×800 CSS viewport (5K iMac, DPR=2).
-   Scales continuously 768px – 1920px. ── */
-
+/* ── Tutorial embed scoped styles ── */
 #tutorial-embed {
   position: relative;
   width: 100%;
@@ -21,287 +45,488 @@
   font-family: 'Space Mono', monospace;
   color: #f5f5f5;
   overflow: hidden;
-
-  --golden: #e7cc44;
-  --coral:  #de544a;
-  --cyan:   #5bc6e2;
-  --lime:   #c1dc6e;
-  --purple: #8d69c6;
-  --pink:   #e97883;
-  --bg:     #0a0a0a;
-  --panel:  #111111;
-  --border: rgba(255,255,255,0.08);
-
-  --t-badge:     clamp(2rem,   4.2vw, 5rem);
-  --t-title:     clamp(1.3rem, 2vw,   2.4rem);
-  --t-desc:      clamp(0.65rem,0.78vw,0.88rem);
-  --t-key:       clamp(0.58rem,0.68vw,0.78rem);
-  --t-ann:       clamp(0.52rem,0.6vw, 0.72rem);
-  --t-auto:      clamp(0.48rem,0.56vw,0.66rem);
-  --t-overlay:   clamp(1.8rem, 4.5vw, 4.8rem);
-  --t-overlay-p: clamp(0.62rem,0.75vw,0.88rem);
-  --t-save:      clamp(0.85rem,1.05vw,1.3rem);
-  --t-kbd:       clamp(0.75rem,0.9vw,  1.1rem);
-  --t-sym:       clamp(11px,   1.2vw,  16px);
-  --t-nav:       clamp(0.75rem,0.9vw,  1.1rem);
-
-  --strip-w:    clamp(160px, 20vw, 280px);
-  --strip-pad:  clamp(1.2rem,2.2vw,2.8rem);
-  --cell-sz:    clamp(20px,  2.4vw,  34px);
-  --kbd-w:      clamp(28px,  3.2vw,  46px);
-  --kbd-h:      clamp(34px,  3.8vw,  54px);
-  --sym-btn-sz: clamp(26px,  2.8vw,  40px);
-  --sidebar-w:  clamp(38px,  4.2vw,  58px);
-  --nav-sz:     clamp(26px,  2.8vw,  40px);
-  --save-pad-v: clamp(0.55rem,0.8vh, 1rem);
-  --save-pad-h: clamp(1.2rem, 1.8vw, 2.4rem);
 }
 
-#tutorial-embed * { margin: 0; padding: 0; box-sizing: border-box; }
+  /* font loaded via main stylesheet */
 
-#tutorial-embed .slide {
-  position: absolute; inset: 0; display: flex;
-  opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
-}
-#tutorial-embed .slide.active { opacity: 1; pointer-events: all; }
+  :root {
+    --golden: #e7cc44;
+    --coral: #de544a;
+    --cyan: #5bc6e2;
+    --lime: #c1dc6e;
+    --purple: #8d69c6;
+    --pink: #e97883;
+    --bg: #0a0a0a;
+    --panel: #111111;
+    --border: rgba(255,255,255,0.08);
+  }
 
-#tutorial-embed .label-strip {
-  width: var(--strip-w);
-  flex-shrink: 0;
-  background: var(--panel);
-  border-right: 1px solid var(--border);
-  display: flex; flex-direction: column; justify-content: center;
-  padding: var(--strip-pad);
-  position: relative; z-index: 10;
-  gap: clamp(0.5rem,0.9vh,1.2rem);
-}
+  #tutorial-embed * { margin: 0; padding: 0; box-sizing: border-box; }
 
-#tutorial-embed .step-badge {
-  font-family: 'Space Mono', monospace;
-  font-size: var(--t-badge);
-  line-height: 1; color: var(--coral); opacity: 0.2;
-}
-#tutorial-embed .step-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: var(--t-title);
-  letter-spacing: 0.08em; line-height: 1.1;
-}
-#tutorial-embed .step-desc {
-  font-family: 'Space Mono', monospace;
-  font-weight: 300; font-size: var(--t-desc);
-  line-height: 1.75; color: var(--cyan); opacity: 0.85;
-}
-#tutorial-embed .step-key {
-  display: inline-flex; align-items: center; gap: 0.5rem;
-  background: rgba(255,255,255,0.06); border: 1px solid var(--border);
-  padding: clamp(0.32rem,0.5vh,0.6rem) clamp(0.5rem,0.8vw,0.9rem);
-  font-size: var(--t-key); letter-spacing: 0.1em; color: var(--golden); white-space: nowrap;
-}
+  #tutorial-embed {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  #tutorial-embed {
+    background: var(--bg);
+    font-family: 'Space Mono', monospace;
+    color: #f5f5f5;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+  }
 
-#tutorial-embed .demo-area {
-  flex: 1; position: relative; background: #0d0d0d; overflow: hidden;
-}
-#tutorial-embed .demo-grid {
-  position: absolute; inset: 0;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-  background-size: var(--cell-sz) var(--cell-sz);
-}
+  /* ── STEP SLIDES ── */
+  #tutorial-embed .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+  }
+  #tutorial-embed .slide.active {
+    opacity: 1;
+    pointer-events: all;
+  }
 
-#tutorial-embed .cell {
-  position: absolute;
-  width: var(--cell-sz); height: var(--cell-sz);
-  display: flex; align-items: center; justify-content: center;
-  font-size: calc(var(--cell-sz) * 0.58);
-  border-radius: 2px; opacity: 0; transform: scale(0.5);
-  transition: opacity 0.25s ease, transform 0.25s ease;
-}
-#tutorial-embed .cell.show { opacity: 1; transform: scale(1); }
+  /* ── LEFT LABEL STRIP ── */
+  #tutorial-embed .label-strip {
+    width: clamp(200px, 22vw, 280px);
+    flex-shrink: 0;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2.5rem 2rem;
+    position: relative;
+    z-index: 10;
+  }
 
-#tutorial-embed .cursor {
-  position: absolute;
-  width: clamp(14px,1.6vw,22px); height: clamp(14px,1.6vw,22px);
-  border: 2px solid var(--golden); border-radius: 50%;
-  pointer-events: none; z-index: 50;
-  transition: left 0.4s cubic-bezier(0.25,0.1,0.25,1), top 0.4s cubic-bezier(0.25,0.1,0.25,1);
-}
-#tutorial-embed .cursor::after {
-  content: ''; position: absolute; top: 50%; left: 50%;
-  transform: translate(-50%,-50%);
-  width: clamp(3px,0.3vw,5px); height: clamp(3px,0.3vw,5px);
-  background: var(--golden); border-radius: 50%;
-}
-#tutorial-embed .cursor.dragging { border-color: var(--coral); box-shadow: 0 0 12px var(--coral); }
-#tutorial-embed .cursor.dragging::after { background: var(--coral); }
+  #tutorial-embed .step-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(3rem, 5vw, 5rem);
+    line-height: 1;
+    color: var(--coral);
+    opacity: 0.2;
+    margin-bottom: 1rem;
+  }
 
-#tutorial-embed .trail-dot {
-  position: absolute;
-  width: clamp(3px,0.35vw,5px); height: clamp(3px,0.35vw,5px);
-  background: var(--coral); border-radius: 50%;
-  opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
-}
-#tutorial-embed .trail-dot.show { opacity: 0.6; }
+  #tutorial-embed .step-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1.5rem, 2.2vw, 2.2rem);
+    letter-spacing: 0.08em;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
 
-#tutorial-embed .sidebar-hint {
-  position: absolute; right: 0; top: 0; bottom: 0;
-  width: var(--sidebar-w); background: rgba(10,10,10,0.95);
-  border-left: 1px solid var(--border);
-  display: flex; flex-direction: column; align-items: center;
-  padding: clamp(0.6rem,1vh,1.2rem) 0;
-  gap: clamp(0.45rem,0.7vh,0.9rem); z-index: 20;
-}
+  #tutorial-embed .step-desc {
+    font-family: 'Space Mono', monospace;
+    font-weight: 300;
+    font-size: 0.78rem;
+    line-height: 1.75;
+    color: var(--cyan);
+    opacity: 0.85;
+  }
 
-#tutorial-embed .sym-btn {
-  width: var(--sym-btn-sz); height: var(--sym-btn-sz);
-  display: flex; align-items: center; justify-content: center;
-  font-size: var(--t-sym); border: 1px solid transparent;
-  border-radius: 2px; cursor: pointer; transition: all 0.2s;
-  color: rgba(255,255,255,0.5);
-}
-#tutorial-embed .sym-btn.active-sym {
-  border-color: var(--golden); color: var(--golden);
-  background: rgba(231,204,68,0.1); box-shadow: 0 0 8px rgba(231,204,68,0.3);
-}
+  #tutorial-embed .step-key {
+    margin-top: 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: var(--golden);
+  }
 
-#tutorial-embed .kbd-display {
-  position: absolute;
-  bottom: clamp(1.2rem,2.5vh,3rem); left: 50%; transform: translateX(-50%);
-  display: flex; gap: clamp(3px,0.4vw,6px); z-index: 30;
-}
-#tutorial-embed .kbd-key {
-  width: var(--kbd-w); height: var(--kbd-h);
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.15);
-  border-bottom: 3px solid rgba(255,255,255,0.1);
-  border-radius: 4px; display: flex; align-items: center; justify-content: center;
-  font-family: 'Space Mono', monospace; font-size: var(--t-kbd);
-  color: rgba(255,255,255,0.4); transition: all 0.15s ease;
-}
-#tutorial-embed .kbd-key.pressed {
-  background: rgba(231,204,68,0.15); border-color: var(--golden);
-  border-bottom-color: rgba(231,204,68,0.3); color: var(--golden);
-  transform: translateY(2px); box-shadow: 0 0 10px rgba(231,204,68,0.25);
-}
+  /* ── CANVAS DEMO AREA ── */
+  #tutorial-embed .demo-area {
+    flex: 1;
+    position: relative;
+    background: #0d0d0d;
+    overflow: hidden;
+  }
 
-#tutorial-embed .typed-word {
-  position: absolute; top: 50%; left: 50%;
-  transform: translate(-50%,-50%); z-index: 25;
-  display: flex; gap: clamp(3px,0.4vw,6px);
-}
-#tutorial-embed .typed-char {
-  display: inline-flex; flex-direction: column;
-  gap: clamp(1px,0.15vw,2px);
-  opacity: 0; transform: translateY(10px);
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-#tutorial-embed .typed-char.show { opacity: 1; transform: translateY(0); }
+  /* ── GRID BACKGROUND ── */
+  #tutorial-embed .demo-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
 
-#tutorial-embed .color-dot {
-  width: clamp(20px,2.4vw,32px); height: clamp(20px,2.4vw,32px);
-  border-radius: 50%; border: 2px solid transparent;
-  transition: all 0.2s; cursor: pointer; flex-shrink: 0;
-}
-#tutorial-embed .color-dot.selected {
-  border-color: white; transform: scale(1.2); box-shadow: 0 0 10px currentColor;
-}
+  /* ── WOVEN CELLS ── */
+  #tutorial-embed .cell {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    border-radius: 2px;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  #tutorial-embed .cell.show {
+    opacity: 1;
+    transform: scale(1);
+  }
 
-#tutorial-embed .progress-bar {
-  position: absolute;
-  bottom: clamp(0.7rem,1.2vh,1.4rem); left: 50%; transform: translateX(-50%);
-  display: flex; gap: clamp(4px,0.5vw,8px); z-index: 200;
-}
-#tutorial-embed .prog-dot {
-  width: clamp(5px,0.55vw,8px); height: clamp(5px,0.55vw,8px);
-  border-radius: 50%; background: rgba(255,255,255,0.2); transition: all 0.3s;
-}
-#tutorial-embed .prog-dot.active {
-  background: var(--golden); width: clamp(14px,1.6vw,22px); border-radius: 3px;
-}
+  /* ── CURSOR ── */
+  #tutorial-embed .cursor {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--golden);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 50;
+    transition: left 0.4s cubic-bezier(0.25,0.1,0.25,1), top 0.4s cubic-bezier(0.25,0.1,0.25,1);
+  }
+  #tutorial-embed .cursor::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 4px;
+    height: 4px;
+    background: var(--golden);
+    border-radius: 50%;
+  }
+  #tutorial-embed .cursor.dragging {
+    border-color: var(--coral);
+    box-shadow: 0 0 12px var(--coral);
+  }
+  #tutorial-embed .cursor.dragging::after {
+    background: var(--coral);
+  }
 
-#tutorial-embed .save-btn-demo {
-  position: absolute;
-  bottom: clamp(1.8rem,3.5vh,4.5rem); left: 50%; transform: translateX(-50%);
-  background: var(--coral); color: white;
-  font-family: 'Bebas Neue', sans-serif; font-size: var(--t-save);
-  letter-spacing: 0.15em;
-  padding: var(--save-pad-v) var(--save-pad-h);
-  border: none; cursor: pointer;
-  display: flex; align-items: center; gap: clamp(0.4rem,0.6vw,0.85rem);
-  z-index: 30; opacity: 0; white-space: nowrap;
-  transition: opacity 0.4s ease, transform 0.2s ease;
-}
-#tutorial-embed .save-btn-demo.show { opacity: 1; }
-#tutorial-embed .save-btn-demo.click-anim {
-  transform: translateX(-50%) scale(0.95); filter: brightness(1.2);
-}
-#tutorial-embed .save-icon { font-size: var(--t-save); }
+  /* ── DRAG TRAIL ── */
+  #tutorial-embed .trail-dot {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--coral);
+    border-radius: 50%;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  #tutorial-embed .trail-dot.show { opacity: 0.6; }
 
-#tutorial-embed .flash {
-  position: absolute; inset: 0; background: white;
-  opacity: 0; pointer-events: none; z-index: 100; transition: opacity 0.1s ease;
-}
-#tutorial-embed .flash.active { opacity: 0.6; }
+  /* ── SIDEBAR REPLICA ── */
+  #tutorial-embed .sidebar-hint {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 48px;
+    background: rgba(10,10,10,0.95);
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem 0;
+    gap: 0.75rem;
+    z-index: 20;
+  }
 
-#tutorial-embed .annotation {
-  position: absolute; font-size: var(--t-ann);
-  font-family: 'Space Mono', monospace; letter-spacing: 0.1em;
-  color: var(--golden); opacity: 0; transition: opacity 0.4s ease;
-  z-index: 40; white-space: nowrap;
-}
-#tutorial-embed .annotation.show { opacity: 1; }
-#tutorial-embed .annotation .ann-line {
-  display: block; width: clamp(28px,3vw,48px); height: 1px;
-  background: var(--golden); margin-top: clamp(2px,0.4vh,5px); opacity: 0.5;
-}
+  #tutorial-embed .sym-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: rgba(255,255,255,0.5);
+  }
+  #tutorial-embed .sym-btn.active-sym {
+    border-color: var(--golden);
+    color: var(--golden);
+    background: rgba(231,204,68,0.1);
+    box-shadow: 0 0 8px rgba(231,204,68,0.3);
+  }
 
-#tutorial-embed .title-overlay {
-  position: absolute; inset: 0;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  background: var(--bg); z-index: 200; transition: opacity 0.8s ease;
-  gap: clamp(0.5rem,1vh,1.2rem);
-}
-#tutorial-embed .title-overlay.hide { opacity: 0; pointer-events: none; }
-#tutorial-embed .title-overlay h1 {
-  font-family: 'Space Mono', monospace; font-size: var(--t-overlay);
-  text-align: center; line-height: 0.9;
-}
-#tutorial-embed .title-overlay h1 span { display: block; }
-#tutorial-embed .title-overlay h1 span:nth-child(1) { color: var(--lime); }
-#tutorial-embed .title-overlay h1 span:nth-child(2) { color: var(--golden); }
-#tutorial-embed .title-overlay h1 span:nth-child(3) { color: var(--coral); }
-#tutorial-embed .title-overlay p {
-  font-size: var(--t-overlay-p); letter-spacing: 0.25em; color: var(--cyan);
-}
-#tutorial-embed .title-bar {
-  width: clamp(40px,4.5vw,70px); height: clamp(2px,0.3vh,4px);
-  background: var(--coral); animation: expandBar 1s ease 0.5s forwards;
-  transform: scaleX(0); transform-origin: left;
-}
-@keyframes expandBar { to { transform: scaleX(1); } }
+  /* ── KEYBOARD LETTERS ── */
+  #tutorial-embed .kbd-display {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.4rem;
+    z-index: 30;
+  }
 
-#tutorial-embed .nav-arrows {
-  position: absolute;
-  bottom: clamp(0.7rem,1.2vh,1.4rem); right: clamp(1rem,1.4vw,2rem);
-  display: flex; gap: clamp(4px,0.5vw,8px); z-index: 200;
-}
-#tutorial-embed .nav-arr {
-  width: var(--nav-sz); height: var(--nav-sz);
-  background: rgba(255,255,255,0.06); border: 1px solid var(--border);
-  color: rgba(255,255,255,0.4); display: flex; align-items: center; justify-content: center;
-  cursor: pointer; font-size: var(--t-nav); transition: all 0.2s;
-  font-family: 'Space Mono', monospace;
-}
-#tutorial-embed .nav-arr:hover {
-  background: rgba(231,204,68,0.1); border-color: var(--golden); color: var(--golden);
-}
+  #tutorial-embed .kbd-key {
+    width: 38px;
+    height: 44px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-bottom: 3px solid rgba(255,255,255,0.1);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 1rem;
+    color: rgba(255,255,255,0.4);
+    transition: all 0.15s ease;
+  }
+  #tutorial-embed .kbd-key.pressed {
+    background: rgba(231,204,68,0.15);
+    border-color: var(--golden);
+    border-bottom-color: rgba(231,204,68,0.3);
+    color: var(--golden);
+    transform: translateY(2px);
+    box-shadow: 0 0 10px rgba(231,204,68,0.25);
+  }
 
-#tutorial-embed .auto-badge {
-  position: absolute;
-  top: clamp(0.7rem,1.2vh,1.4rem); right: clamp(1rem,1.4vw,2rem);
-  font-size: var(--t-auto); letter-spacing: 0.15em;
-  color: rgba(255,255,255,0.25); z-index: 200;
-}
+  /* ── TYPED WORD DISPLAY ── */
+  #tutorial-embed .typed-word {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Space Mono', monospace;
+    font-size: 0;
+    letter-spacing: 0.15em;
+    z-index: 25;
+    display: flex;
+    gap: 4px;
+  }
+
+  #tutorial-embed .typed-char {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 2px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  #tutorial-embed .typed-char.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Pixel-style letter rendering */
+  #tutorial-embed .pixel-row {
+    display: flex;
+    gap: 2px;
+  }
+  #tutorial-embed .pixel {
+    width: 6px;
+    height: 6px;
+    border-radius: 1px;
+    background: transparent;
+  }
+  #tutorial-embed .pixel.on { background: currentColor; }
+
+  /* ── COLOR DOTS ── */
+  #tutorial-embed .color-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  #tutorial-embed .color-dot.selected {
+    border-color: white;
+    transform: scale(1.2);
+    box-shadow: 0 0 10px currentColor;
+  }
+
+  /* ── PROGRESS DOTS ── */
+  #tutorial-embed .progress-bar {
+    position: absolute;
+    bottom: 1.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.5rem;
+    z-index: 200;
+  }
+
+  #tutorial-embed .prog-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    transition: all 0.3s;
+  }
+  #tutorial-embed .prog-dot.active {
+    background: var(--golden);
+    width: 20px;
+    border-radius: 3px;
+  }
+
+  /* ── SAVE BUTTON DEMO ── */
+  #tutorial-embed .save-btn-demo {
+    position: absolute;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--coral);
+    color: white;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.15em;
+    padding: 0.8rem 2rem;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    z-index: 30;
+    opacity: 0;
+    transition: opacity 0.4s ease, transform 0.2s ease;
+  }
+  #tutorial-embed .save-btn-demo.show {
+    opacity: 1;
+  }
+  #tutorial-embed .save-btn-demo.click-anim {
+    transform: translateX(-50%) scale(0.95);
+    filter: brightness(1.2);
+  }
+  #tutorial-embed .save-icon { font-size: 1rem; }
+
+  /* ── FLASH EFFECT ── */
+  #tutorial-embed .flash {
+    position: absolute;
+    inset: 0;
+    background: white;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 100;
+    transition: opacity 0.1s ease;
+  }
+  #tutorial-embed .flash.active { opacity: 0.6; }
+
+  /* ── ANNOTATIONS ── */
+  #tutorial-embed .annotation {
+    position: absolute;
+    font-size: 0.65rem;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.1em;
+    color: var(--golden);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: 40;
+  }
+  #tutorial-embed .annotation.show { opacity: 1; }
+  #tutorial-embed .annotation .ann-line {
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: var(--golden);
+    margin-top: 4px;
+    opacity: 0.5;
+  }
+
+  /* ── TITLE OVERLAY ── */
+  #tutorial-embed .title-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    z-index: 200;
+    transition: opacity 0.8s ease;
+  }
+  #tutorial-embed .title-overlay.hide { opacity: 0; pointer-events: none; }
+
+  #tutorial-embed .title-overlay h1 {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    text-align: center;
+    line-height: 0.9;
+  }
+  #tutorial-embed .title-overlay h1 span { display: block; }
+  #tutorial-embed .title-overlay h1 span:nth-child(1) { color: var(--lime); }
+  #tutorial-embed .title-overlay h1 span:nth-child(2) { color: var(--golden); }
+  #tutorial-embed .title-overlay h1 span:nth-child(3) { color: var(--coral); }
+
+  #tutorial-embed .title-overlay p {
+    margin-top: 1.5rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.25em;
+    color: var(--cyan);
+  }
+
+  #tutorial-embed .title-bar {
+    width: 60px;
+    height: 3px;
+    background: var(--coral);
+    margin-top: 1rem;
+    animation: expandBar 1s ease 0.5s forwards;
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  @keyframes expandBar {
+  #tutorial-embed to { transform: scaleX(1); }
+  }
+
+  /* ── NAV ARROWS ── */
+  #tutorial-embed .nav-arrows {
+    position: absolute;
+    bottom: 1rem;
+    right: 1.5rem;
+    display: flex;
+    gap: 0.5rem;
+    z-index: 200;
+  }
+  #tutorial-embed .nav-arr {
+    width: 32px;
+    height: 32px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    color: rgba(255,255,255,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    font-family: 'Space Mono', monospace;
+  }
+  #tutorial-embed .nav-arr:hover {
+    background: rgba(231,204,68,0.1);
+    border-color: var(--golden);
+    color: var(--golden);
+  }
+
+  /* ── LOOPING ARROW (auto) ── */
+  #tutorial-embed .auto-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.25);
+    z-index: 200;
+  }
+
+
 
 </style>
 </head>
@@ -330,6 +555,10 @@
                 <span class="tab-label">ARCHIVE</span>
                 <span class="archive-count" id="archive-count"></span>
             </button>
+            <button class="nav-tab" data-tab="about">
+                <span class="tab-number">05</span>
+                <span class="tab-label">ABOUT</span>
+            </button>
         </nav>
 
         <!-- HOME TAB -->
@@ -339,11 +568,10 @@
                 <!-- HEADER ROW: title + tagline -->
                 <div class="home-header">
                     <div class="home-header-left">
-                        <span class="home-eyebrow">◈ Digital Craft Studio · 2026</span>
+                        <span class="home-eyebrow">◈ Modernizing Tradition</span>
                         <canvas id="woven-title-canvas" class="woven-title-canvas"></canvas>
                     </div>
                     <div class="home-header-right">
-                        <p class="home-desc">Merging ancestral Andean textile patterns<br>with contemporary digital expression.</p>
                         <button class="cta-button" onclick="switchTab('instructions')">
                             BEGIN WEAVING
                             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -531,10 +759,10 @@
     </div>
 
     <!-- Type bar replica -->
-    <div style="position:absolute; top:8px; left:var(--sidebar-w,52px); right:0; height:clamp(26px,3.5vh,38px); background:rgba(255,255,255,0.04); border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; padding:0 12px; z-index:30; font-family:'Space Mono',monospace; font-size:var(--t-key,0.62rem); letter-spacing:0.12em;">
+    <div style="position:absolute; top:8px; left:52px; right:0; height:32px; background:rgba(255,255,255,0.04); border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; padding:0 12px; z-index:30; font-family:'Space Mono',monospace; font-size:0.62rem; letter-spacing:0.12em;">
       <span style="color:var(--golden); opacity:0.7">TYPE</span>
       <span id="type-bar-demo" style="color:#f5f5f5; opacity:0.9"></span><span style="color:var(--golden); animation:blink 1s step-end infinite">_</span>
-      <span style="margin-left:auto; color:rgba(255,255,255,0.25); font-size:var(--t-ann,0.55rem)">ENTER TO CLEAR</span>
+      <span style="margin-left:auto; color:rgba(255,255,255,0.25); font-size:0.55rem">ENTER TO CLEAR</span>
     </div>
     <style>@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}</style>
 
@@ -573,7 +801,7 @@
     </button>
 
     <!-- Download success -->
-    <div id="save-confirm" style="position:absolute; top:clamp(1rem,2vh,2.5rem); left:50%; transform:translateX(-50%); font-family:'Bebas Neue',sans-serif; font-size:var(--t-save,1rem); letter-spacing:0.15em; color:var(--lime); opacity:0; transition: opacity 0.4s ease; white-space:nowrap; z-index:50">
+    <div id="save-confirm" style="position:absolute; top:2rem; left:50%; transform:translateX(-50%); font-family:'Bebas Neue',sans-serif; font-size:1rem; letter-spacing:0.15em; color:var(--lime); opacity:0; transition: opacity 0.4s ease; white-space:nowrap; z-index:50">
       ✓ SAVED TO ARCHIVE
     </div>
 
@@ -668,10 +896,8 @@ function animSlide0() {
   const symbols = ['╋','◆','△','◉','✦','◇','▬'];
   const colors = ['#e7cc44','#de544a','#c1dc6e','#5bc6e2','#8d69c6','#e97883','#d39c42'];
 
-  // Fluid grid size — read from computed CSS custom property
-  const demo = document.getElementById('demo-0');
-  const cellPx = parseFloat(getComputedStyle(demo).getPropertyValue('--cell-sz')) || 28;
-  const gridSize = Math.round(cellPx);
+  // Drag path: series of grid positions
+  const gridSize = 28;
   const paths = [
     // Horizontal sweep
     {col:2, row:3},{col:3,row:3},{col:4,row:3},{col:5,row:3},{col:6,row:3},
@@ -733,8 +959,8 @@ function animSlide0() {
 
   // Start after short delay
   const startTimer = setTimeout(() => {
-    cursor.style.left = (20 + paths[0].col * gridSize - 10) + 'px';
-    cursor.style.top = (20 + paths[0].row * gridSize - 10) + 'px';
+    cursor.style.left = (20 + paths[0].col * 28 - 10) + 'px';
+    cursor.style.top = (20 + paths[0].row * 28 - 10) + 'px';
     placeCells();
   }, 600);
 
@@ -772,10 +998,8 @@ function animSlide1() {
     }
 
     // Move cursor to that button position — left panel
-    const symBtnSz = parseFloat(getComputedStyle(document.getElementById('tutorial-embed')).getPropertyValue('--sym-btn-sz')) || 32;
-    const gap = symBtnSz * 0.55;
-    const top = 14 + idx * (symBtnSz + gap);
-    cursor.style.left = (parseFloat(getComputedStyle(document.getElementById('tutorial-embed')).getPropertyValue('--sidebar-w')) + 8) + 'px';
+    const top = 16 + idx * 42;
+    cursor.style.left = '62px';
     cursor.style.top = top + 'px';
 
     // Add symbol to showcase
@@ -788,8 +1012,7 @@ function animSlide1() {
     }
     const span = document.createElement('span');
     span.textContent = symbols[idx];
-    const showcaseFontSz = Math.round(parseFloat(getComputedStyle(document.getElementById('tutorial-embed')).getPropertyValue('--cell-sz')) * 1.1);
-    span.style.fontSize = showcaseFontSz + 'px';
+    span.style.fontSize = '28px';
     span.style.color = colors[idx];
     span.style.opacity = '0';
     span.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
@@ -905,10 +1128,9 @@ function animSlide3() {
   let timers = [];
 
   // Fill canvas with a completed textile
-  const demo3 = document.getElementById('demo-3');
-  const gridSize = Math.round(parseFloat(getComputedStyle(demo3).getPropertyValue('--cell-sz')) || 24);
-  const cols = Math.floor((demo3.offsetWidth - parseFloat(getComputedStyle(demo3).getPropertyValue('--sidebar-w'))) / gridSize);
-  const rows = Math.floor(demo3.offsetHeight / gridSize);
+  const gridSize = 24;
+  const cols = Math.floor((680 - 48) / gridSize);
+  const rows = Math.floor(540 / gridSize);
 
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
@@ -918,7 +1140,7 @@ function animSlide3() {
         cell.className = 'cell';
         cell.style.width = gridSize + 'px';
         cell.style.height = gridSize + 'px';
-        cell.style.fontSize = Math.round(gridSize * 0.58) + 'px';
+        cell.style.fontSize = '13px';
         cell.style.left = (c * gridSize) + 'px';
         cell.style.top = (r * gridSize) + 'px';
         cell.style.color = colors[idx];
@@ -1130,7 +1352,342 @@ setTimeout(() => {
             </div>
         </section>
 
+        <!-- ── ABOUT TAB ── -->
+        <section id="about" class="tab-content">
+            <div class="ab-hotspot-wrapper">
+                <!-- Main image with clickable hotspots -->
+                <div class="ab-main-img-container" id="ab-main-container">
+                    <img src="exhibition0.png" alt="Digital Andes Installation" class="ab-main-img" id="ab-main-img">
+
+                    <!-- Hotspot 1: top-center blue LCD — pixel (2343,809) → 50.85% L, 23.40% T -->
+                    <div class="ab-hotspot" style="top:8.4%;left:48.35%;width:5%;height:5%;"
+                         data-img="wool0.jpg"
+                         data-caption="Born from a personal tension: growing up between Andean weaving heritage passed down through my family in Ecuador, and the digital tools I use every day as an artist. The textile my family brought back became the catalyst; a living archive of geometry, color, and meaning. Digital Andes is the bridge: where the loom and the keyboard become the same instrument."
+                         data-label="THE INSPIRATION">
+                        <span class="ab-hotspot-ring"></span>
+                    </div>
+
+                    <!-- Hotspot 2: mid-center diagonal LCD — pixel (1934,1437) → 41.97% L, 41.57% T -->
+                    <div class="ab-hotspot" style="top:35.57%;left:39.47%;width:5%;height:5%;"
+                         data-img="exhibition3.jpg"
+                         data-caption="Neither alone tells the full story. A purely digital piece loses the warmth and cultural weight of the textile. Leaving the textile untouched puts it behind glass; beautiful, but silent. By embedding screens within the woven cloth, the pixel grid echoes the warp-and-weft grid. The friction is intentional; it asks what is gained and what is lost when tradition meets technology."
+                         data-label="HAND-MADE VS DIGITAL">
+                        <span class="ab-hotspot-ring"></span>
+                    </div>
+
+                    <!-- Hotspot 3: mid-right dot LCD — pixel (2897,1607) → 62.87% L, 46.49% T -->
+                    <div class="ab-hotspot" style="top:42.49%;left:60.37%;width:5%;height:5%;"
+                         data-img="exhibition4.jpg"
+                         data-caption="Small Nextion screens are physically woven into the textile, embedded within it like a second layer of pattern. Each runs its own generative animation. The textile holds the screens; the screens echo the textile. Together they form something that could not exist as either one alone."
+                         data-label="NEXTION SCREENS">
+                        <span class="ab-hotspot-ring"></span>
+                    </div>
+
+                    <!-- Hotspot 4: lower-left X LCD — pixel (1568,2229) → 34.02% L, 64.49% T -->
+                    <div class="ab-hotspot" style="top:70.29%;left:31.52%;width:5%;height:5%;"
+                         data-img="exhibition2.jpg"
+                         data-caption="These are not decorative shapes but they are motifs inherited from centuries of Andean weaving, where every thread encodes cosmological belief.  Each screen translates that ancient visual language into light and code."
+                         data-label="PATTERN SCREENS">
+                        <span class="ab-hotspot-ring"></span>
+                    </div>
+
+                    <!-- Hotspot 5: lower-right device — pixel (3222,2314) → 69.92% L, 66.95% T -->
+                    <div class="ab-hotspot" style="top:64.95%;left:67.42%;width:5%;height:5%;"
+                         data-img="wool.jpg"
+                         data-caption="Sourced from Ecuador, this hand-woven textile carries generations of knowledge, labor, and identity. Cloth is not just fabric but it is memory made material. It hangs here not as artifact, but as an active surface: alive with the screens embedded in it and the patterns it inspired. Without the textile, the technology has no roots."
+                         data-label="THE TEXTILE">
+                        <span class="ab-hotspot-ring"></span>
+                    </div>
+
+                    <!-- Hotspot 6: monitor screen circle — pixel (2329,2447) → 50.53% L, 70.80% T -->
+                    <div class="ab-hotspot" style="top:68.80%;left:48.03%;width:5%;height:5%;"
+                         data-img="exhibition1.jpg"
+                         data-caption="A visitor sits at the keyboard and becomes a weaver. They select symbols drawn from Andean motifs and place them across a grid that mirrors a loom. The visitor is not a spectator but a participant, every session adds a digital thread to a collective weaving that grows with each person who sits down."
+                         data-label="VISITOR INTERACTION">
+                        <span class="ab-hotspot-ring"></span>
+                    </div>
+
+                    <!-- Hint text -->
+                    <div class="ab-hint" id="ab-hint">◈ click to explore</div>
+                </div>
+
+                <!-- Overlay panel that appears when a hotspot is clicked -->
+                <div class="ab-overlay" id="ab-overlay" hidden>
+                    <div class="ab-overlay-inner">
+                        <button class="ab-overlay-close" id="ab-overlay-close">✕</button>
+                        <img src="" alt="" class="ab-overlay-img" id="ab-overlay-img">
+                        <div class="ab-overlay-meta">
+                            <span class="ab-overlay-label" id="ab-overlay-label"></span>
+                            <p class="ab-overlay-caption" id="ab-overlay-caption"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+<style>
+/* ══════════════════════════════════════════════════════
+   ABOUT TAB — Interactive Hotspot Image
+══════════════════════════════════════════════════════ */
+#about.tab-content.active { display: flex; }
+
+.ab-hotspot-wrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0a0a0a;
+    overflow: hidden;
+}
+
+.ab-main-img-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ab-main-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: brightness(0.72) saturate(0.9);
+    transition: filter 0.6s ease;
+}
+
+.ab-main-img-container:hover .ab-main-img {
+    filter: brightness(0.72) saturate(0.9);
+}
+
+/* ── HOTSPOTS ── */
+.ab-hotspot {
+    position: absolute;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.ab-hotspot-ring {
+    display: block;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2.5px solid rgba(231,204,68,0.85);
+    background: rgba(231,204,68,0.12);
+    position: relative;
+    transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+    box-shadow: 0 0 0 0 rgba(231,204,68,0.4);
+    animation: ab-pulse 2.8s ease-in-out infinite;
+}
+
+.ab-hotspot:hover .ab-hotspot-ring {
+    transform: scale(1.5);
+    border-color: rgba(231,204,68,1);
+    background: rgba(231,204,68,0.25);
+    animation: none;
+    box-shadow: 0 0 14px rgba(231,204,68,0.5);
+}
+
+@keyframes ab-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(231,204,68,0.5); }
+    50% { box-shadow: 0 0 0 8px rgba(231,204,68,0); }
+}
+
+/* Invisible hit area — the whole hotspot div is clickable */
+.ab-hotspot::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+}
+
+/* ── HINT ── */
+.ab-hint {
+    position: absolute;
+    bottom: 1.4rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.22em;
+    color: rgba(231,204,68,0.5);
+    pointer-events: none;
+    z-index: 20;
+    transition: opacity 0.4s ease;
+}
+
+/* ── OVERLAY ── */
+.ab-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.82);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+}
+
+.ab-overlay:not([hidden]) {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.ab-overlay[hidden] {
+    display: flex !important; /* override hidden so transition works */
+    opacity: 0;
+    pointer-events: none;
+}
+
+.ab-overlay-inner {
+    position: relative;
+    max-width: min(88vw, 860px);
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    transform: scale(0.96) translateY(10px);
+    transition: transform 0.35s ease;
+}
+
+.ab-overlay:not([hidden]) .ab-overlay-inner {
+    transform: scale(1) translateY(0);
+}
+
+.ab-overlay-img {
+    width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+    display: block;
+    border: 1px solid rgba(255,255,255,0.06);
+}
+
+.ab-overlay-meta {
+    width: 100%;
+    padding: 1rem 0.1rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.ab-overlay-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.25em;
+    color: rgba(231,204,68,0.8);
+}
+
+.ab-overlay-caption {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    line-height: 1.8;
+    color: rgba(255,255,255,0.45);
+    margin: 0;
+    max-width: 640px;
+}
+
+.ab-overlay-close {
+    position: absolute;
+    top: -2.6rem;
+    right: 0;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.5);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    width: 2rem;
+    height: 2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.ab-overlay-close:hover {
+    border-color: rgba(231,204,68,0.6);
+    color: rgba(231,204,68,0.9);
+}
+</style>
+
+<script>
+(function() {
+    const overlay    = document.getElementById('ab-overlay');
+    const overlayImg = document.getElementById('ab-overlay-img');
+    const overlayLbl = document.getElementById('ab-overlay-label');
+    const overlayCap = document.getElementById('ab-overlay-caption');
+    const closeBtn   = document.getElementById('ab-overlay-close');
+    const hint       = document.getElementById('ab-hint');
+
+    if (!overlay) return;
+
+    function openOverlay(imgSrc, label, caption) {
+        overlayImg.src = imgSrc;
+        overlayLbl.textContent = label;
+        overlayCap.textContent = caption;
+        overlay.hidden = false;
+        if (hint) hint.style.opacity = '0';
+        document.addEventListener('keydown', onKey);
+    }
+
+    function closeOverlay() {
+        overlay.hidden = true;
+        if (hint) hint.style.opacity = '1';
+        document.removeEventListener('keydown', onKey);
+    }
+
+    function onKey(e) { if (e.key === 'Escape') closeOverlay(); }
+
+    // Wire up hotspots
+    document.querySelectorAll('.ab-hotspot').forEach(function(el) {
+        el.addEventListener('click', function(e) {
+            e.stopPropagation();
+            openOverlay(
+                el.dataset.img,
+                el.dataset.label,
+                el.dataset.caption
+            );
+        });
+    });
+
+    // Close on overlay background click
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) closeOverlay();
+    });
+
+    closeBtn.addEventListener('click', closeOverlay);
+
+    // Hide hint after first interaction
+    document.querySelectorAll('.ab-hotspot').forEach(function(el) {
+        el.addEventListener('click', function() {
+            if (hint) hint.style.display = 'none';
+        }, { once: true });
+    });
+})();
+</script>
+
     </main>
+
+
+
+
+
+
+
+
+
+
+
 
     <!-- ── FULLSCREEN VIEWER MODAL ── -->
     <div id="viewer-modal" class="viewer-modal" hidden>
@@ -2069,6 +2626,7 @@ setTimeout(() => {
   document.fonts.ready.then(() => requestAnimationFrame(draw));
 })();
 </script>
+
 <script>
 /* ── ARCHIVE WOVEN TITLE — "ARCHIVE" as animated weaving symbols ── */
 (function () {
